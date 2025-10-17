@@ -141,10 +141,21 @@ class ApiClient {
 
   // ==================== AUTH ====================
   async login(email: string, password: string): Promise<LoginResponse> {
-    return this.request<LoginResponse>('/api/auth/login', {
+    const response = await this.request<any>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
-    }).then(res => res as LoginResponse);
+    });
+
+    // Extract token and user from the data object
+    if (response.success && response.data) {
+      return {
+        success: true,
+        token: response.data.token,
+        user: response.data.user,
+      };
+    }
+
+    throw new Error(response.message || 'Login failed');
   }
 
   // ==================== STUDENTS ====================
@@ -190,14 +201,14 @@ class ApiClient {
     return this.request(`/api/academic/segments?page=${page}&limit=${limit}`);
   }
 
-  async createSegment(data: Partial<Segment>): Promise<ApiResponse<Segment>> {
+  async createSegment(data: any): Promise<ApiResponse<Segment>> {
     return this.request('/api/academic/segments', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateSegment(id: string, data: Partial<Segment>): Promise<ApiResponse<Segment>> {
+  async updateSegment(id: string, data: any): Promise<ApiResponse<Segment>> {
     return this.request(`/api/academic/segments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -215,14 +226,14 @@ class ApiClient {
     return this.request(`/api/academic/classes?page=${page}&limit=${limit}`);
   }
 
-  async createClass(data: Partial<Class>): Promise<ApiResponse<Class>> {
+  async createClass(data: any): Promise<ApiResponse<Class>> {
     return this.request('/api/academic/classes', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateClass(id: string, data: Partial<Class>): Promise<ApiResponse<Class>> {
+  async updateClass(id: string, data: any): Promise<ApiResponse<Class>> {
     return this.request(`/api/academic/classes/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -240,14 +251,14 @@ class ApiClient {
     return this.request(`/api/academic/series?page=${page}&limit=${limit}`);
   }
 
-  async createSeries(data: Partial<Series>): Promise<ApiResponse<Series>> {
+  async createSeries(data: any): Promise<ApiResponse<Series>> {
     return this.request('/api/academic/series', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateSeries(id: string, data: Partial<Series>): Promise<ApiResponse<Series>> {
+  async updateSeries(id: string, data: any): Promise<ApiResponse<Series>> {
     return this.request(`/api/academic/series/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

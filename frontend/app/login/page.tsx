@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
+import { pt_BR } from '@/lib/translations';
+
+const t = pt_BR;
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@school.com');
@@ -21,7 +24,7 @@ export default function LoginPage() {
       await login(email, password);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to login. Please try again.'
+        err instanceof Error ? err.message : t.login.failed
       );
       setIsLoading(false);
     }
@@ -33,8 +36,8 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">📚 SMS</h1>
-          <p className="text-gray-600">School Management System</p>
-          <p className="text-sm text-gray-500 mt-2">Student & Academic Management</p>
+          <p className="text-gray-600">{t.login.title}</p>
+          <p className="text-sm text-gray-500 mt-2">{t.login.subtitle}</p>
         </div>
 
         {/* Error Message */}
@@ -49,7 +52,7 @@ export default function LoginPage() {
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
+              {t.login.emailLabel}
             </label>
             <input
               type="email"
@@ -65,7 +68,7 @@ export default function LoginPage() {
           {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              {t.login.passwordLabel}
             </label>
             <input
               type="password"
@@ -84,27 +87,27 @@ export default function LoginPage() {
             disabled={isLoading}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg transition duration-200 mt-6"
           >
-            {isLoading ? 'Logging in...' : 'Sign In'}
+            {isLoading ? t.login.loggingIn : t.login.signIn}
           </button>
         </form>
 
         {/* Test Credentials */}
         <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded text-sm">
-          <p className="font-semibold text-gray-900 mb-2">Test Credentials:</p>
+          <p className="font-semibold text-gray-900 mb-2">{t.login.testCredentials}</p>
           <p className="text-gray-700">
-            <span className="font-medium">Admin:</span> admin@school.com / 123456
+            <span className="font-medium">{t.login.admin}:</span> admin@school.com / 123456
           </p>
           <p className="text-gray-700">
-            <span className="font-medium">Manager:</span> gerente@school.com / 123456
+            <span className="font-medium">{t.login.manager}:</span> gerente@school.com / 123456
           </p>
           <p className="text-gray-700">
-            <span className="font-medium">Operator:</span> operador@school.com / 123456
+            <span className="font-medium">{t.login.operator}:</span> operador@school.com / 123456
           </p>
         </div>
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-500">
-          <p>🚀 Backend API running on http://localhost:5001</p>
+          <p>🚀 {t.login.backendStatus}</p>
         </div>
       </div>
     </div>

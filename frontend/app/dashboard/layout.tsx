@@ -21,11 +21,11 @@ export default function DashboardLayout({
   };
 
   const navItems = [
-    { href: '/dashboard', label: '📊 Dashboard', icon: '📊' },
-    { href: '/dashboard/students', label: '👥 Students', icon: '👥' },
-    { href: '/dashboard/classes', label: '🏫 Classes', icon: '🏫' },
-    { href: '/dashboard/series', label: '📚 Series', icon: '📚' },
-    { href: '/dashboard/segments', label: '🎓 Segments', icon: '🎓' },
+    { href: '/dashboard', label: '📊 Painel', icon: '📊' },
+    { href: '/dashboard/students', label: '👥 Alunos', icon: '👥' },
+    { href: '/dashboard/classes', label: '🏫 Turmas', icon: '🏫' },
+    { href: '/dashboard/series', label: '📚 Séries', icon: '📚' },
+    { href: '/dashboard/segments', label: '🎓 Segmentos', icon: '🎓' },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -43,7 +43,7 @@ export default function DashboardLayout({
           {sidebarOpen && (
             <div>
               <h1 className="text-xl font-bold">📚 SMS</h1>
-              <p className="text-xs text-gray-400">School Mgmt</p>
+              <p className="text-xs text-gray-400">Gestão Escolar</p>
             </div>
           )}
           <button
@@ -76,7 +76,7 @@ export default function DashboardLayout({
         <div className="border-t border-gray-700 p-4 space-y-3">
           {sidebarOpen && (
             <div className="text-sm">
-              <p className="text-gray-400">Logged in as</p>
+              <p className="text-gray-400">Conectado como</p>
               <p className="font-medium truncate">{user?.name}</p>
               <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
@@ -85,7 +85,7 @@ export default function DashboardLayout({
             onClick={handleLogout}
             className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg transition-colors text-sm"
           >
-            {sidebarOpen ? '🚪 Logout' : '🚪'}
+            {sidebarOpen ? '🚪 Sair' : '🚪'}
           </button>
         </div>
       </aside>
