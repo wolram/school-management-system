@@ -1,0 +1,252 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ USUARIOS ============
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String    // bcrypt hash
+  name            String
+  profile         UserProfile @default(OPERADOR) // ADMIN, GERENTE, OPERADOR
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  // Relations
+  auditLogs       AuditLog[]
+
+  @@map("users")
+}
+
+enum UserProfile {
+  ADMIN
+  GERENTE
+  OPERADOR
+}
+
+// ============ ESTRUTURA ACADEMICA ============
+model Segment {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  order           Int       @default(0)
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  series          Series[]
+
+  @@map("segments")
+}
+
+model Series {
+  id              String    @id @default(cuid())
+  name            String
+  segmentId       String
+  segment         Segment   @relation(fields: [segmentId], references: [id])
+  order           Int       @default(0)
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  classes         Class[]
+  students        Student[]
+  prices          Price[]
+
+  @@unique([segmentId, name])
+  @@map("series")
+}
+
+model Class {
+  id                    String    @id @default(cuid())
+  name                  String
+  seriesId              String
+  series                Series    @relation(fields: [seriesId], references: [id])
+  defaultEntryTime      String    // formato: "08:00" (HH:mm)
+  defaultExitTime       String    // formato: "12:00" (HH:mm)
+  active                Boolean   @default(true)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  // Relations
+  students              Student[]
+
+  @@unique([seriesId, name])
+  @@map("classes")
+}
+
+// ============ PRECOS ============
+model Price {
+  id                String    @id @default(cuid())
+  type              PriceType @default(MENSALIDADE) // MENSALIDADE, SERVICO, HORA_EXTRA
+  seriesId          String?
+  series            Series?   @relation(fields: [seriesId], references: [id])
+  serviceName       String?   // ex: "Almoço", "Jantar", "Judô"
+  value             Decimal   @db.Decimal(10, 2)
+  valuePerHour      Decimal?  @db.Decimal(10, 2) // para HORA_EXTRA
+  effectiveDate     DateTime  @default(now())
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("prices")
+}
+
+enum PriceType {
+  MENSALIDADE
+  SERVICO
+  HORA_EXTRA
+}
+
+// ============ ALUNOS ============
+model Student {
+  id                    String    @id @default(cuid())
+  name                  String
+  dateOfBirth           DateTime
+  cpf                   String?   @unique
+  seriesId              String
+  series                Series    @relation(fields: [seriesId], references: [id])
+  classId               String
+  class                 Class     @relation(fields: [classId], references: [id])
+  guardianName          String?
+  guardianEmail         String?
+  guardianPhone         String?
+  status                StudentStatus @default(ATIVO) // ATIVO, INATIVO
+  enrollmentDate        DateTime  @default(now())
+  exitDate              DateTime?
+  active                Boolean   @default(true)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  // Relations
+  contractMatrix        ContractMatrix[]
+  extraHours            ExtraHours[]
+  classHistory          ClassHistory[]
+
+  @@map("students")
+}
+
+enum StudentStatus {
+  ATIVO
+  INATIVO
+}
+
+// ============ MATRIZ DE CONTRATO (Semanal) ============
+model ContractMatrix {
+  id                    String    @id @default(cuid())
+  studentId             String
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  dayOfWeek             Int       // 0 = Segunda, 1 = Terça, ..., 4 = Sexta
+  entryTime             String    // formato: "08:00" (HH:mm)
+  exitTime              String    // formato: "12:00" (HH:mm)
+  services              Json      // ex: { "almoço": true, "jantar": false, "judô": true }
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([studentId, dayOfWeek])
+  @@map("contract_matrices")
+}
+
+// ============ HORAS EXTRAS ============
+model ExtraHours {
+  id                    String    @id @default(cuid())
+  studentId             String
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date                  DateTime  @db.Date
+  hoursCalculated       Decimal   @db.Decimal(5, 2) // ex: 1.5 horas
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([studentId, date])
+  @@map("extra_hours")
+}
+
+// ============ HISTORICO DE CLASSES ============
+model ClassHistory {
+  id                    String    @id @default(cuid())
+  studentId             String
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  fromClassId           String?
+  toClassId             String
+  reason                String?
+  changedAt             DateTime  @default(now())
+  createdAt             DateTime  @default(now())
+
+  @@map("class_history")
+}
+
+// ============ LOG DE AUDITORIA ============
+model AuditLog {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id])
+  action                AuditAction @default(UPDATE) // CREATE, UPDATE, DELETE
+  table                 String    // ex: "students", "prices"
+  recordId              String    // ID do registro afetado
+  description           String    @db.Text // ex: "Almoço de segunda-feira incluído para o aluno João da Silva"
+  oldValue              Json?     // valor anterior (para UPDATE)
+  newValue              Json?     // novo valor (para UPDATE/CREATE)
+  ipAddress             String?
+  userAgent             String?
+  createdAt             DateTime  @default(now())
+
+  @@index([userId])
+  @@index([table])
+  @@index([recordId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+// ============ NOTIFICACOES ============
+model Notification {
+  id                    String    @id @default(cuid())
+  eventType             String    // ex: "contract_updated", "price_changed"
+  recipientEmail        String
+  subject               String
+  messageTemplate       String    @db.Text
+  active                Boolean   @default(true)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("notifications")
+}
+
+// ============ EMAIL QUEUE (para envio assincrono) ============
+model EmailQueue {
+  id                    String    @id @default(cuid())
+  to                    String
+  subject               String
+  html                  String    @db.Text
+  status                EmailStatus @default(PENDING) // PENDING, SENT, FAILED
+  attempts              Int       @default(0)
+  lastAttempt           DateTime?
+  error                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([status])
+  @@map("email_queue")
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
