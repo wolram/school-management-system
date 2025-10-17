@@ -122,3 +122,24 @@ export const budgetCalculatorSchema = z.object({
     horasExtras: z.number().min(0).max(100).optional(),
   }).optional(),
 });
+
+// ═══════════════════════════════════════════════════════════════
+// ACADEMIC MODULE SCHEMAS
+// ═══════════════════════════════════════════════════════════════
+
+export const segmentSchema = z.object({
+  name: z.string().min(3, 'Nome do segmento deve ter no mínimo 3 caracteres'),
+  color: z.string().regex(/^#[0-9A-F]{6}$/i, 'Cor deve ser válida (ex: #FF5733)').optional(),
+});
+
+export const seriesSchema = z.object({
+  name: z.string().min(2, 'Nome da série deve ter no mínimo 2 caracteres'),
+  level: z.number().int().min(1, 'Nível deve ser no mínimo 1'),
+  segmentId: z.string().cuid('ID do segmento inválido'),
+});
+
+export const classSchema = z.object({
+  name: z.string().min(1, 'Nome da turma é obrigatório'),
+  capacity: z.number().int().min(1, 'Capacidade deve ser no mínimo 1'),
+  seriesId: z.string().cuid('ID da série inválido'),
+});

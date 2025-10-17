@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
 import authRoutes from './routes/auth';
+import academicRoutes from './routes/academic';
 import { prisma } from './config/database';
 
 const app = express();
@@ -76,6 +77,11 @@ app.get('/health', async (req: Request, res: Response) => {
  * Incluir rotas de autenticação
  */
 app.use('/api/auth', authRoutes);
+
+/**
+ * Incluir rotas do módulo acadêmico
+ */
+app.use('/api/academic', academicRoutes);
 
 // ============ Tratamento de Erros ============
 

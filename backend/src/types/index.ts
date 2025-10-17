@@ -102,3 +102,24 @@ export interface BudgetSummary {
   discounts: number;
   total: number;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ACADEMIC MODULE TYPES
+// ═══════════════════════════════════════════════════════════════
+
+export interface CreateSegmentInput {
+  name: string;
+  color?: string; // hex color for UI
+}
+
+export interface CreateSeriesInput {
+  name: string;
+  level: number; // 1, 2, 3, etc
+  segmentId: string;
+}
+
+export interface CreateClassInput {
+  name: string;
+  capacity: number;
+  seriesId: string;
+}
