@@ -31,8 +31,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-2xl p-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">📚 SMS</h1>
@@ -85,14 +85,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg transition duration-200 mt-6"
+            className="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg transition duration-200 mt-6"
           >
             {isLoading ? t.login.loggingIn : t.login.signIn}
           </button>
         </form>
 
         {/* Test Credentials */}
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded text-sm">
+        <div className="mt-8 p-4 bg-primary-50 border border-primary-200 rounded-lg text-sm">
           <p className="font-semibold text-gray-900 mb-2">{t.login.testCredentials}</p>
           <p className="text-gray-700">
             <span className="font-medium">{t.login.admin}:</span> admin@school.com / 123456

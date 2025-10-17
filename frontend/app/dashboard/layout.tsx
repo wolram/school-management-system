@@ -36,7 +36,7 @@ export default function DashboardLayout({
       <aside
         className={`${
           sidebarOpen ? 'w-64' : 'w-20'
-        } bg-gray-900 text-white transition-all duration-300 flex flex-col shadow-lg`}
+        } bg-primary-900 text-white transition-all duration-300 flex flex-col shadow-lg`}
       >
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-700">
@@ -62,8 +62,8 @@ export default function DashboardLayout({
               href={item.href}
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive(item.href)
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-800'
+                  ? 'bg-primary-600 text-white'
+                  : 'text-gray-300 hover:bg-primary-800'
               }`}
             >
               <span className="text-xl">{item.icon}</span>
@@ -83,7 +83,7 @@ export default function DashboardLayout({
           )}
           <button
             onClick={handleLogout}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg transition-colors text-sm"
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 rounded-lg transition-colors text-sm"
           >
             {sidebarOpen ? '🚪 Sair' : '🚪'}
           </button>
