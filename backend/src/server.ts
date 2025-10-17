@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import 'dotenv/config';
 import authRoutes from './routes/auth';
 import academicRoutes from './routes/academic';
+import studentRoutes from './routes/students';
 import { prisma } from './config/database';
 
 const app = express();
@@ -82,6 +83,11 @@ app.use('/api/auth', authRoutes);
  * Incluir rotas do módulo acadêmico
  */
 app.use('/api/academic', academicRoutes);
+
+/**
+ * Incluir rotas de estudantes
+ */
+app.use('/api/students', studentRoutes);
 
 // ============ Tratamento de Erros ============
 
