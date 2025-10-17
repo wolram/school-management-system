@@ -1,5 +1,5 @@
-import { prisma } from '@/config/database';
-import { CreateSegmentInput, CreateSeriesInput, CreateClassInput } from '@/types';
+import { prisma } from '../config/database';
+import { CreateSegmentInput, CreateSeriesInput, CreateClassInput } from '../types';
 
 // ═══════════════════════════════════════════════════════════════
 // SEGMENT SERVICES

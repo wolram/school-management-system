@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, authorize } from '@/middleware/auth';
+import { authMiddleware, authorize } from '../middleware/auth';
 import {
   // Segments
   createSegment,
@@ -20,7 +20,7 @@ import {
   updateClass,
   deleteClass,
   getAllClasses,
-} from '@/controllers/academicController';
+} from '../controllers/academicController';
 
 const router = Router();
 

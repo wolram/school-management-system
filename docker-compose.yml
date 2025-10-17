@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: school_mgmt_postgres
+    environment:
+      POSTGRES_USER: schooladmin
+      POSTGRES_PASSWORD: SecurePass123!
+      POSTGRES_DB: school_management
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U schooladmin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: school_mgmt_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: schooladmin
+      MONGO_INITDB_ROOT_PASSWORD: SecurePass123!
+      MONGO_INITDB_DATABASE: school_management
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local
+
+networks:
+  default:
+    name: school_management_network

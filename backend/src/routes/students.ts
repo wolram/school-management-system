@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, authorize } from '@/middleware/auth';
+import { authMiddleware, authorize } from '../middleware/auth';
 import {
   createStudent,
   getAllStudents,
@@ -16,7 +16,7 @@ import {
   calculateExtraHoursPeriod,
   getClassComposition,
   bulkImportStudents,
-} from '@/controllers/studentController';
+} from '../controllers/studentController';
 
 const router = Router();
 

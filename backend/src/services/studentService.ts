@@ -1,5 +1,5 @@
-import { prisma } from '@/config/database';
-import { StudentCreateInput, ContractMatrixInput } from '@/types';
+import { prisma } from '../config/database';
+import { StudentCreateInput, ContractMatrixInput } from '../types';
 
 // ═══════════════════════════════════════════════════════════════
 // STUDENT SERVICES

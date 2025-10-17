@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { studentService } from '@/services/studentService';
-import { createStudentSchema, contractMatrixSchema, paginationSchema } from '@/utils/validation';
+import { studentService } from '../services/studentService';
+import { createStudentSchema, contractMatrixSchema, paginationSchema } from '../utils/validation';
 import { ZodError } from 'zod';
 
 // ═══════════════════════════════════════════════════════════════

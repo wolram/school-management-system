@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { segmentService, seriesService, classService } from '@/services/academicService';
-import { segmentSchema, seriesSchema, classSchema, paginationSchema } from '@/utils/validation';
+import { segmentService, seriesService, classService } from '../services/academicService';
+import { segmentSchema, seriesSchema, classSchema, paginationSchema } from '../utils/validation';
 import { ZodError } from 'zod';
 
 // ═══════════════════════════════════════════════════════════════
