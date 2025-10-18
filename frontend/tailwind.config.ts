@@ -7,46 +7,56 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // Rotary-inspired color palette
+      // Miosótis School professional color palette
       colors: {
-        // Primary: Rotary Blue
+        // Primary: Professional Miosótis Blue - Trust, Education, Excellence
         primary: {
-          50: '#f0f5ff',
-          100: '#d9e5ff',
-          200: '#b3ccff',
-          300: '#8db2ff',
-          400: '#6699ff',
-          500: '#3366ff',
-          600: '#2952cc',
-          700: '#1f3d99',
-          800: '#152966',
-          900: '#0a1533',
+          50: '#f0f4fa',
+          100: '#d9e5f0',
+          200: '#b3cbdd',
+          300: '#8db2ca',
+          400: '#6799b7',
+          500: '#4180a4', // Main primary - Professional blue
+          600: '#2d5f8f',
+          700: '#1e427a',
+          800: '#122b65',
+          900: '#0a1850',
         },
-        // Secondary: Rotary Gold
+        // Secondary: Miosótis Green - Growth, Nature, Life
         secondary: {
+          50: '#f1f8f4',
+          100: '#d9ede5',
+          200: '#b3ddcc',
+          300: '#8dccb3',
+          400: '#67bb99',
+          500: '#41aa80', // Warm green accent
+          600: '#2d8f66',
+          700: '#1e744d',
+          800: '#125934',
+          900: '#0a3d1b',
+        },
+        // Accent: Miosótis Gold/Amber - Excellence, Achievement, Stars
+        accent: {
           50: '#fffbf0',
           100: '#ffe8cc',
           200: '#ffd699',
           300: '#ffc366',
           400: '#ffb333',
-          500: '#ffa500',
+          500: '#ffa500', // Gold accent
           600: '#cc8400',
           700: '#996300',
           800: '#664200',
           900: '#332100',
-        },
-        // Accent colors
-        accent: {
           success: '#10b981',
           warning: '#f59e0b',
           error: '#ef4444',
           info: '#0ea5e9',
         },
       },
-      // Professional fonts
+      // Professional fonts from Miosótis theme
       fontFamily: {
-        body: ['Open Sans', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
-        heading: ['Roboto Slab', 'Georgia', 'serif'],
+        body: ['Inter', '"Segoe UI"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        heading: ['Poppins', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
         mono: ['Menlo', 'Monaco', '"Courier New"', 'monospace'],
       },
       // Enhanced shadows for better depth

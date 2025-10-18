@@ -21,11 +21,11 @@ export default function DashboardLayout({
   };
 
   const navItems = [
-    { href: '/dashboard', label: '📊 Painel', icon: '📊' },
-    { href: '/dashboard/students', label: '👥 Alunos', icon: '👥' },
-    { href: '/dashboard/classes', label: '🏫 Turmas', icon: '🏫' },
-    { href: '/dashboard/series', label: '📚 Séries', icon: '📚' },
-    { href: '/dashboard/segments', label: '🎓 Segmentos', icon: '🎓' },
+    { href: '/dashboard', label: 'Painel', icon: '■' },
+    { href: '/dashboard/students', label: 'Alunos', icon: '■' },
+    { href: '/dashboard/classes', label: 'Turmas', icon: '■' },
+    { href: '/dashboard/series', label: 'Séries', icon: '■' },
+    { href: '/dashboard/segments', label: 'Segmentos', icon: '■' },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -36,13 +36,13 @@ export default function DashboardLayout({
       <aside
         className={`${
           sidebarOpen ? 'w-64' : 'w-20'
-        } bg-primary-900 text-white transition-all duration-300 flex flex-col shadow-lg`}
+        } bg-primary-800 text-white transition-all duration-300 flex flex-col shadow-2xl`}
       >
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-700">
           {sidebarOpen && (
             <div>
-              <h1 className="text-xl font-bold">📚 SMS</h1>
+              <h1 className="text-xl font-bold font-heading">SMS</h1>
               <p className="text-xs text-gray-400">Gestão Escolar</p>
             </div>
           )}
@@ -62,8 +62,8 @@ export default function DashboardLayout({
               href={item.href}
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive(item.href)
-                  ? 'bg-primary-600 text-white'
-                  : 'text-gray-300 hover:bg-primary-800'
+                  ? 'bg-secondary-600 text-white font-heading'
+                  : 'text-gray-300 hover:bg-primary-700'
               }`}
             >
               <span className="text-xl">{item.icon}</span>
@@ -85,7 +85,7 @@ export default function DashboardLayout({
             onClick={handleLogout}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 rounded-lg transition-colors text-sm"
           >
-            {sidebarOpen ? '🚪 Sair' : '🚪'}
+            {sidebarOpen ? 'Sair' : 'Sair'}
           </button>
         </div>
       </aside>

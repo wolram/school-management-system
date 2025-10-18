@@ -6,11 +6,13 @@ import { api } from '@/lib/api';
 interface Student {
   id: string;
   name: string;
-  email: string;
-  registration: string;
   dateOfBirth: string;
-  status: string;
+  seriesId?: string;
   classId?: string;
+  guardianName?: string;
+  guardianEmail?: string;
+  guardianPhone?: string;
+  cpf?: string;
 }
 
 interface PaginationData {
@@ -34,15 +36,34 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    registration: '',
     dateOfBirth: '',
-    status: 'ATIVO',
+    seriesId: '',
+    classId: '',
+    guardianName: '',
+    guardianEmail: '',
+    guardianPhone: '',
+    cpf: '',
   });
+  const [series, setSeries] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
 
   useEffect(() => {
     fetchStudents(pagination.page);
+    loadSeriesAndClasses();
   }, []);
+
+  const loadSeriesAndClasses = async () => {
+    try {
+      const [seriesRes, classesRes] = await Promise.all([
+        api.getSeries(1, 100),
+        api.getClasses(1, 100),
+      ]);
+      if (seriesRes.data) setSeries(seriesRes.data);
+      if (classesRes.data) setClasses(classesRes.data);
+    } catch (error) {
+      console.error('Failed to load series and classes:', error);
+    }
+  };
 
   const fetchStudents = async (page: number) => {
     try {
@@ -86,19 +107,25 @@ export default function StudentsPage() {
       setEditingStudent(student);
       setFormData({
         name: student.name,
-        email: student.email,
-        registration: student.registration,
         dateOfBirth: student.dateOfBirth,
-        status: student.status,
+        seriesId: student.seriesId || '',
+        classId: student.classId || '',
+        guardianName: student.guardianName || '',
+        guardianEmail: student.guardianEmail || '',
+        guardianPhone: student.guardianPhone || '',
+        cpf: student.cpf || '',
       });
     } else {
       setEditingStudent(null);
       setFormData({
         name: '',
-        email: '',
-        registration: '',
         dateOfBirth: '',
-        status: 'ATIVO',
+        seriesId: '',
+        classId: '',
+        guardianName: '',
+        guardianEmail: '',
+        guardianPhone: '',
+        cpf: '',
       });
     }
     setShowModal(true);
@@ -111,16 +138,30 @@ export default function StudentsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Formulário enviado com dados:', formData);
+
+    // Validação básica
+    if (!formData.name || !formData.dateOfBirth || !formData.seriesId || !formData.classId) {
+      alert('Por favor, preencha os campos obrigatórios: Nome, Data de Nascimento, Série e Turma');
+      return;
+    }
+
     try {
       if (editingStudent) {
+        console.log('Atualizando aluno:', editingStudent.id);
         await api.updateStudent(editingStudent.id, formData);
+        alert('Aluno atualizado com sucesso!');
       } else {
-        await api.createStudent(formData);
+        console.log('Criando novo aluno...');
+        const result = await api.createStudent(formData);
+        console.log('Resposta:', result);
+        alert('Aluno adicionado com sucesso!');
       }
       handleCloseModal();
       fetchStudents(pagination.page);
     } catch (error) {
       console.error('Failed to save student:', error);
+      alert(`Erro ao salvar: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
@@ -139,12 +180,12 @@ export default function StudentsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Students Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 font-heading">Gestão de Alunos</h1>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+          className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
         >
-          ➕ Add Student
+          Adicionar Aluno
         </button>
       </div>
 
@@ -154,14 +195,14 @@ export default function StudentsPage() {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search students by name, email, or registration..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          placeholder="Pesquisar alunos por nome, email ou matrícula..."
+          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
         />
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+          className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
         >
-          🔍 Search
+          Pesquisar
         </button>
         {searchTerm && (
           <button
@@ -191,25 +232,25 @@ export default function StudentsPage() {
           <>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-primary-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Name
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase">
+                      Nome
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Registration
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase">
+                      Matrícula
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Date of Birth
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase">
+                      Data de Nascimento
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Actions
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase">
+                      Ações
                     </th>
                   </tr>
                 </thead>
@@ -242,15 +283,15 @@ export default function StudentsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                         <button
                           onClick={() => handleOpenModal(student)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors text-xs"
+                          className="bg-primary-500 hover:bg-primary-600 text-white px-3 py-1 rounded transition-colors text-xs"
                         >
-                          ✏️ Edit
+                          Editar
                         </button>
                         <button
                           onClick={() => handleDelete(student.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors text-xs"
+                          className="bg-secondary-500 hover:bg-secondary-600 text-white px-3 py-1 rounded transition-colors text-xs"
                         >
-                          🗑️ Delete
+                          Excluir
                         </button>
                       </td>
                     </tr>
@@ -294,89 +335,137 @@ export default function StudentsPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h2 className="text-2xl font-bold mb-4">
-              {editingStudent ? 'Edit Student' : 'Add New Student'}
+            <h2 className="text-2xl font-bold mb-4 font-heading">
+              {editingStudent ? 'Editar Aluno' : 'Adicionar Novo Aluno'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 max-h-[70vh] overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
+                  Nome *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Registration *
-                </label>
-                <input
-                  type="text"
-                  value={formData.registration}
-                  onChange={(e) => setFormData({ ...formData, registration: e.target.value })}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date of Birth *
+                  Data de Nascimento *
                 </label>
                 <input
                   type="date"
                   value={formData.dateOfBirth}
                   onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  Série *
                 </label>
                 <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.seriesId}
+                  onChange={(e) => setFormData({ ...formData, seriesId: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
                 >
-                  <option value="ATIVO">Active</option>
-                  <option value="INATIVO">Inactive</option>
+                  <option value="">Selecione uma série</option>
+                  {series.map((s: any) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Turma *
+                </label>
+                <select
+                  value={formData.classId}
+                  onChange={(e) => setFormData({ ...formData, classId: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                >
+                  <option value="">Selecione uma turma</option>
+                  {classes.map((c: any) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  CPF
+                </label>
+                <input
+                  type="text"
+                  value={formData.cpf}
+                  onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
+                  placeholder="000.000.000-00"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nome do Responsável
+                </label>
+                <input
+                  type="text"
+                  value={formData.guardianName}
+                  onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email do Responsável
+                </label>
+                <input
+                  type="email"
+                  value={formData.guardianEmail}
+                  onChange={(e) => setFormData({ ...formData, guardianEmail: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefone do Responsável
+                </label>
+                <input
+                  type="tel"
+                  value={formData.guardianPhone}
+                  onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                  placeholder="(11) 99999-9999"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                />
               </div>
 
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
+                  className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg transition-colors font-heading"
                 >
-                  {editingStudent ? 'Update' : 'Create'}
+                  {editingStudent ? 'Atualizar' : 'Criar'}
                 </button>
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 rounded-lg transition-colors"
+                  className="flex-1 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-2 rounded-lg transition-colors font-heading"
                 >
-                  Cancel
+                  Cancelar
                 </button>
               </div>
             </form>

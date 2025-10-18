@@ -75,67 +75,67 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-lg p-8">
-        <h1 className="text-4xl font-bold mb-2">Welcome back, {user?.name}! 👋</h1>
-        <p className="text-blue-100">
-          Here's what's happening with your school management system today.
+      <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white rounded-xl shadow-2xl p-8 font-heading">
+        <h1 className="text-4xl font-bold mb-2">Bem-vindo de volta, {user?.name}!</h1>
+        <p className="text-primary-100">
+          Veja o que está acontecendo com o sistema de gestão escolar hoje.
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          icon="👥"
-          label="Total Students"
+          icon="■"
+          label="Total de Alunos"
           value={stats.totalStudents}
-          color="border-blue-500"
+          color="border-primary-500"
         />
         <StatCard
-          icon="✅"
-          label="Active Students"
+          icon="■"
+          label="Alunos Ativos"
           value={stats.activeStudents}
-          color="border-green-500"
+          color="border-secondary-500"
         />
         <StatCard
-          icon="🏫"
-          label="Total Classes"
+          icon="■"
+          label="Total de Turmas"
           value={stats.totalClasses}
-          color="border-purple-500"
+          color="border-accent-500"
         />
         <StatCard
-          icon="🎓"
-          label="Segments"
+          icon="■"
+          label="Segmentos"
           value={stats.totalSegments}
-          color="border-orange-500"
+          color="border-secondary-400"
         />
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+      <div className="bg-gray-50 rounded-lg shadow-lg p-8 border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 font-heading">Ações Rápidas</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-            ➕ Add Student
+          <button className="bg-accent-500 hover:bg-accent-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md">
+            Configurações
           </button>
-          <button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-            📊 View Reports
+          <button className="bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md">
+            Relatórios
           </button>
-          <button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-            ⚙️ Settings
+          <button className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md">
+            Adicionar Aluno
           </button>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">System Information</h2>
+      <div className="bg-gray-50 rounded-lg shadow-lg p-8 border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 font-heading">Informações do Sistema</h2>
         <div className="space-y-3 text-gray-700">
           <p className="flex justify-between">
-            <span>Backend API Status:</span>
-            <span className="font-semibold text-green-600">✅ Connected</span>
+            <span>Status da API Backend:</span>
+            <span className="font-semibold text-green-600">Conectado</span>
           </p>
           <p className="flex justify-between">
-            <span>Your Role:</span>
+            <span>Sua Função:</span>
             <span className="font-semibold">{user?.profile}</span>
           </p>
           <p className="flex justify-between">
@@ -143,7 +143,7 @@ export default function DashboardPage() {
             <span className="font-semibold">{user?.email}</span>
           </p>
           <p className="flex justify-between">
-            <span>Version:</span>
+            <span>Versão:</span>
             <span className="font-semibold">1.0.0</span>
           </p>
         </div>

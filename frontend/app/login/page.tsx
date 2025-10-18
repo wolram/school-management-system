@@ -31,11 +31,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">📚 SMS</h1>
+          <h1 className="text-4xl font-bold text-primary-600 mb-2 font-heading">SMS</h1>
           <p className="text-gray-600">{t.login.title}</p>
           <p className="text-sm text-gray-500 mt-2">{t.login.subtitle}</p>
         </div>
@@ -85,14 +85,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg transition duration-200 mt-6"
+            className="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6 font-heading"
           >
             {isLoading ? t.login.loggingIn : t.login.signIn}
           </button>
         </form>
 
         {/* Test Credentials */}
-        <div className="mt-8 p-4 bg-primary-50 border border-primary-200 rounded-lg text-sm">
+        <div className="mt-8 p-4 bg-secondary-50 border border-secondary-200 rounded-lg text-sm">
           <p className="font-semibold text-gray-900 mb-2">{t.login.testCredentials}</p>
           <p className="text-gray-700">
             <span className="font-medium">{t.login.admin}:</span> admin@school.com / 123456
@@ -107,7 +107,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-500">
-          <p>🚀 {t.login.backendStatus}</p>
+          <p>{t.login.backendStatus}</p>
         </div>
       </div>
     </div>
