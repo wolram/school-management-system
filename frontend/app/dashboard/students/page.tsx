@@ -231,7 +231,7 @@ export default function StudentsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this student?')) {
+    if (confirm('Tem certeza que deseja excluir este aluno?')) {
       try {
         await api.deleteStudent(id);
         fetchStudents(pagination.page);
@@ -278,7 +278,7 @@ export default function StudentsPage() {
             }}
             className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
           >
-            Clear
+            Limpar
           </button>
         )}
       </form>
@@ -287,11 +287,11 @@ export default function StudentsPage() {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">Loading students...</p>
+            <p className="text-gray-500">Carregando alunos...</p>
           </div>
         ) : students.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">No students found.</p>
+            <p className="text-gray-500">Nenhum aluno encontrado.</p>
           </div>
         ) : (
           <>
@@ -368,9 +368,9 @@ export default function StudentsPage() {
             {/* Pagination */}
             <div className="bg-gray-50 px-6 py-4 flex items-center justify-between">
               <p className="text-sm text-gray-600">
-                Showing {(pagination.page - 1) * pagination.pageSize + 1} to{' '}
-                {Math.min(pagination.page * pagination.pageSize, pagination.total)} of{' '}
-                {pagination.total} students
+                Mostrando {(pagination.page - 1) * pagination.pageSize + 1} até{' '}
+                {Math.min(pagination.page * pagination.pageSize, pagination.total)} de{' '}
+                {pagination.total} alunos
               </p>
               <div className="space-x-2">
                 <button
@@ -378,17 +378,17 @@ export default function StudentsPage() {
                   disabled={pagination.page === 1}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Previous
+                  Anterior
                 </button>
                 <span className="px-3 py-1">
-                  Page {pagination.page} of {pagination.totalPages}
+                  Página {pagination.page} de {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => fetchStudents(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Next
+                  Próxima
                 </button>
               </div>
             </div>
