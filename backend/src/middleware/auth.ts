@@ -110,3 +110,7 @@ export const verifyToken = (token: string): JWTPayload | null => {
     return null;
   }
 };
+
+// Aliases para compatibilidade
+export const authenticateToken = authMiddleware;
+export const requireRole = authorize;

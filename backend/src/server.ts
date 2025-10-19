@@ -5,6 +5,8 @@ import 'dotenv/config';
 import authRoutes from './routes/auth';
 import academicRoutes from './routes/academic';
 import studentRoutes from './routes/students';
+import priceRoutes from './routes/prices';
+import calculationRoutes from './routes/calculations';
 import { prisma } from './config/database';
 
 const app = express();
@@ -97,6 +99,16 @@ app.use('/api/academic', academicRoutes);
  * Incluir rotas de estudantes
  */
 app.use('/api/students', studentRoutes);
+
+/**
+ * Incluir rotas de preços
+ */
+app.use('/api/prices', priceRoutes);
+
+/**
+ * Incluir rotas de cálculos financeiros
+ */
+app.use('/api/calculations', calculationRoutes);
 
 // ============ Tratamento de Erros ============
 
