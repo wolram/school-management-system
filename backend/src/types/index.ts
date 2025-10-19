@@ -123,3 +123,32 @@ export interface CreateClassInput {
   capacity: number;
   seriesId: string;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// TEACHER MODULE TYPES
+// ═══════════════════════════════════════════════════════════════
+
+export interface CreateTeacherInput {
+  name: string;
+  email: string;
+  phone?: string;
+  dateOfBirth: Date;
+  hireDate: Date;
+  specialization: string; // ex: Matemática, Português
+  salary: number;
+  contractType: 'CLT' | 'PJ' | 'ESTAGIARIO' | 'TEMPORARIO';
+  status?: 'ATIVO' | 'INATIVO' | 'FERIAS' | 'LICENCA';
+}
+
+export interface UpdateTeacherInput {
+  name?: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth?: Date;
+  hireDate?: Date;
+  specialization?: string;
+  salary?: number;
+  contractType?: 'CLT' | 'PJ' | 'ESTAGIARIO' | 'TEMPORARIO';
+  status?: 'ATIVO' | 'INATIVO' | 'FERIAS' | 'LICENCA';
+  active?: boolean;
+}

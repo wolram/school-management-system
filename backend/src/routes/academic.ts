@@ -9,6 +9,7 @@ import {
   deleteSegment,
   // Series
   createSeries,
+  getAllSeries,
   getSeriesBySegment,
   getSeriesById,
   updateSeries,
@@ -67,6 +68,12 @@ router.delete('/segments/:id', authMiddleware, authorize('ADMIN'), deleteSegment
  * Create new series (ADMIN or GERENTE)
  */
 router.post('/series', authMiddleware, authorize('ADMIN', 'GERENTE'), createSeries);
+
+/**
+ * GET /api/academic/series
+ * Get all series in the system with pagination
+ */
+router.get('/series', authMiddleware, getAllSeries);
 
 /**
  * GET /api/academic/segments/:segmentId/series

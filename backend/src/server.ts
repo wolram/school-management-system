@@ -5,6 +5,7 @@ import 'dotenv/config';
 import authRoutes from './routes/auth';
 import academicRoutes from './routes/academic';
 import studentRoutes from './routes/students';
+import teacherRoutes from './routes/teachers';
 import priceRoutes from './routes/prices';
 import calculationRoutes from './routes/calculations';
 import { prisma } from './config/database';
@@ -99,6 +100,11 @@ app.use('/api/academic', academicRoutes);
  * Incluir rotas de estudantes
  */
 app.use('/api/students', studentRoutes);
+
+/**
+ * Incluir rotas de professores
+ */
+app.use('/api/teachers', teacherRoutes);
 
 /**
  * Incluir rotas de preços

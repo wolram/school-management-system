@@ -113,6 +113,22 @@ export interface BudgetBreakdown {
   }[];
 }
 
+export interface Teacher {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  dateOfBirth: string;
+  hireDate: string;
+  specialization: string;
+  salary: number;
+  contractType: 'CLT' | 'PJ' | 'ESTAGIARIO' | 'TEMPORARIO';
+  status: 'ATIVO' | 'INATIVO' | 'FERIAS' | 'LICENCA';
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 class ApiClient {
   private token: string | null = null;
 
@@ -348,6 +364,48 @@ class ApiClient {
     if (seriesId) params.append('seriesId', seriesId);
     if (serviceName) params.append('serviceName', serviceName);
     return this.request(`/api/prices/history?${params.toString()}`);
+  }
+
+  // ==================== TEACHERS ====================
+  async getTeachers(page: number = 1, limit: number = 10, filters?: any): Promise<ApiResponse<Teacher[]>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...filters,
+    });
+    return this.request(`/api/teachers?${params.toString()}`);
+  }
+
+  async getTeacher(id: string): Promise<ApiResponse<Teacher>> {
+    return this.request(`/api/teachers/${id}`);
+  }
+
+  async createTeacher(data: Partial<Teacher>): Promise<ApiResponse<Teacher>> {
+    return this.request('/api/teachers', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateTeacher(id: string, data: Partial<Teacher>): Promise<ApiResponse<Teacher>> {
+    return this.request(`/api/teachers/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteTeacher(id: string): Promise<ApiResponse<any>> {
+    return this.request(`/api/teachers/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async searchTeachers(query: string): Promise<ApiResponse<Teacher[]>> {
+    return this.request(`/api/teachers/search?query=${encodeURIComponent(query)}`);
+  }
+
+  async getTeachersByStatus(status: string): Promise<ApiResponse<Teacher[]>> {
+    return this.request(`/api/teachers/status/${status}`);
   }
 
   // ==================== CALCULATIONS ====================
