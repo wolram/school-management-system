@@ -146,8 +146,10 @@ export const classService = {
     const schoolClass = await prisma.class.create({
       data: {
         name: data.name,
-        capacity: data.capacity,
         seriesId: data.seriesId,
+        defaultEntryTime: data.defaultEntryTime,
+        defaultExitTime: data.defaultExitTime,
+        active: data.active ?? true,
       },
       include: { series: { include: { segment: true } } },
     });

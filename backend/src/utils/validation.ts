@@ -138,10 +138,18 @@ export const seriesSchema = z.object({
   segmentId: z.string().cuid('ID do segmento inválido'),
 });
 
+const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
+
 export const classSchema = z.object({
   name: z.string().min(1, 'Nome da turma é obrigatório'),
-  capacity: z.number().int().min(1, 'Capacidade deve ser no mínimo 1'),
   seriesId: z.string().cuid('ID da série inválido'),
+  defaultEntryTime: z
+    .string()
+    .regex(timeRegex, 'Horário de entrada inválido (use HH:mm)'),
+  defaultExitTime: z
+    .string()
+    .regex(timeRegex, 'Horário de saída inválido (use HH:mm)'),
+  active: z.boolean().optional(),
 });
 
 // ═══════════════════════════════════════════════════════════════

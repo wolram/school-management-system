@@ -120,8 +120,10 @@ export interface CreateSeriesInput {
 
 export interface CreateClassInput {
   name: string;
-  capacity: number;
   seriesId: string;
+  defaultEntryTime: string;
+  defaultExitTime: string;
+  active?: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════

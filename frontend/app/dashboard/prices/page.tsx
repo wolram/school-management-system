@@ -282,7 +282,7 @@ export default function PricesPage() {
 
         {!loading && prices.length === 0 && (
           <div className="p-8 text-center text-gray-500">
-            Nenhum preço encontrado. Clique em "Novo Preço" para começar.
+            Nenhum preço encontrado. Clique em &quot;Novo Preço&quot; para começar.
           </div>
         )}
       </div>

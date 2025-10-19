@@ -16,7 +16,7 @@ const router = Router();
 router.post(
   '/extra-hours',
   authenticateToken,
-  requireRole(['ADMIN', 'GERENTE']),
+  requireRole('ADMIN', 'GERENTE'),
   calculationController.calculateExtraHours
 );
 
@@ -39,7 +39,7 @@ router.get(
 router.post(
   '/simulate',
   authenticateToken,
-  requireRole(['ADMIN', 'GERENTE']),
+  requireRole('ADMIN', 'GERENTE'),
   calculationController.simulateContract
 );
 

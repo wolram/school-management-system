@@ -16,7 +16,7 @@ const router = Router();
 router.post(
   '/',
   authenticateToken,
-  requireRole(['ADMIN', 'GERENTE']),
+  requireRole('ADMIN', 'GERENTE'),
   priceController.createPrice
 );
 
@@ -83,7 +83,7 @@ router.get(
 router.put(
   '/:id',
   authenticateToken,
-  requireRole(['ADMIN', 'GERENTE']),
+  requireRole('ADMIN', 'GERENTE'),
   priceController.updatePrice
 );
 
@@ -95,7 +95,7 @@ router.put(
 router.delete(
   '/:id',
   authenticateToken,
-  requireRole(['ADMIN']),
+  requireRole('ADMIN'),
   priceController.deletePrice
 );
 
