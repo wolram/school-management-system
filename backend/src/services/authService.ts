@@ -1,6 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import { prisma } from '../config/database';
-import { generateToken, JWTPayload } from '../middleware/auth';
+import { generateToken } from '../middleware/auth';
+import { JWTPayload } from '../types';
 import { authSchema, createUserSchema } from '../utils/validation';
 import { auditCreate } from '../middleware/audit';
 import { ZodError } from 'zod';

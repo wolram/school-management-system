@@ -109,13 +109,15 @@ export interface BudgetSummary {
 
 export interface CreateSegmentInput {
   name: string;
-  color?: string; // hex color for UI
+  order?: number;
+  active?: boolean;
 }
 
 export interface CreateSeriesInput {
   name: string;
-  level: number; // 1, 2, 3, etc
   segmentId: string;
+  order?: number;
+  active?: boolean;
 }
 
 export interface CreateClassInput {

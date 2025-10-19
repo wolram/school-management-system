@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { JWTPayload } from '../types';
 
 // Extend Express Request type
@@ -95,8 +95,9 @@ export const authorize = (...profiles: string[]) => {
  * Gerar token JWT
  */
 export const generateToken = (payload: JWTPayload): string => {
-  const expiresIn = process.env.JWT_EXPIRE || '24h';
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+  const expiresIn = (process.env.JWT_EXPIRE || '24h') as SignOptions['expiresIn'];
+  const options: SignOptions = { expiresIn };
+  return jwt.sign(payload, JWT_SECRET, options);
 };
 
 /**

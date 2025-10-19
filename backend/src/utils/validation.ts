@@ -69,7 +69,11 @@ export const createUserSchema = z.object({
 export const createStudentSchema = z.object({
   name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
   dateOfBirth: z.coerce.date(),
-  cpf: z.string().optional().nullable(),
+  cpf: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((value) => (value && value.trim().length > 0 ? value : undefined)),
   seriesId: z.string().cuid('Series ID inválido'),
   classId: z.string().cuid('Class ID inválido'),
   guardianName: z.string().optional(),

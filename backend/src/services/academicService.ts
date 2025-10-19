@@ -11,7 +11,8 @@ export const segmentService = {
     const segment = await prisma.segment.create({
       data: {
         name: data.name,
-        color: data.color,
+        ...(typeof data.order === 'number' && { order: data.order }),
+        ...(typeof data.active === 'boolean' && { active: data.active }),
       },
       include: { series: true },
     });
@@ -47,7 +48,11 @@ export const segmentService = {
   async updateSegment(id: string, data: Partial<CreateSegmentInput>) {
     const segment = await prisma.segment.update({
       where: { id },
-      data,
+      data: {
+        ...(data.name && { name: data.name }),
+        ...(typeof data.order === 'number' && { order: data.order }),
+        ...(typeof data.active === 'boolean' && { active: data.active }),
+      },
       include: { series: true },
     });
     return segment;
@@ -70,8 +75,9 @@ export const seriesService = {
     const series = await prisma.series.create({
       data: {
         name: data.name,
-        level: data.level,
         segmentId: data.segmentId,
+        ...(typeof data.order === 'number' && { order: data.order }),
+        ...(typeof data.active === 'boolean' && { active: data.active }),
       },
       include: { segment: true, classes: true },
     });
@@ -123,7 +129,12 @@ export const seriesService = {
   async updateSeries(id: string, data: Partial<CreateSeriesInput>) {
     const series = await prisma.series.update({
       where: { id },
-      data,
+      data: {
+        ...(data.name && { name: data.name }),
+        ...(data.segmentId && { segmentId: data.segmentId }),
+        ...(typeof data.order === 'number' && { order: data.order }),
+        ...(typeof data.active === 'boolean' && { active: data.active }),
+      },
       include: { segment: true, classes: true },
     });
     return series;
