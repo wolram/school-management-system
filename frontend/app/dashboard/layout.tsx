@@ -21,11 +21,13 @@ export default function DashboardLayout({
   };
 
   const navItems = [
-    { href: '/dashboard', label: 'Painel', icon: '■' },
-    { href: '/dashboard/students', label: 'Alunos', icon: '■' },
-    { href: '/dashboard/classes', label: 'Turmas', icon: '■' },
-    { href: '/dashboard/series', label: 'Séries', icon: '■' },
-    { href: '/dashboard/segments', label: 'Segmentos', icon: '■' },
+    { href: '/dashboard', label: 'Painel', icon: '📊' },
+    { href: '/dashboard/students', label: 'Alunos', icon: '👨‍🎓' },
+    { href: '/dashboard/classes', label: 'Turmas', icon: '🏫' },
+    { href: '/dashboard/series', label: 'Séries', icon: '📚' },
+    { href: '/dashboard/segments', label: 'Segmentos', icon: '📋' },
+    { href: '/dashboard/prices', label: 'Preços', icon: '💰' },
+    { href: '/dashboard/calculations', label: 'Cálculos', icon: '🧮' },
   ];
 
   const isActive = (href: string) => pathname === href;
