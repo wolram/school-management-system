@@ -89,16 +89,26 @@ export default function ClassesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação básica
+    if (!formData.name || !formData.code || !formData.seriesId) {
+      alert('Por favor, preencha os campos obrigatórios: Nome, Código e ID da Série');
+      return;
+    }
+
     try {
       if (editingClass) {
         await api.updateClass(editingClass.id, formData);
+        alert('Turma atualizada com sucesso!');
       } else {
         await api.createClass(formData);
+        alert('Turma criada com sucesso!');
       }
       handleCloseModal();
       fetchClasses(pagination.page);
     } catch (error) {
       console.error('Failed to save class:', error);
+      alert(`Erro ao salvar turma: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 

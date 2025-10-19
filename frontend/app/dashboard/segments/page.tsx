@@ -85,16 +85,26 @@ export default function SegmentsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação básica
+    if (!formData.name || !formData.code) {
+      alert('Por favor, preencha os campos obrigatórios: Nome e Código');
+      return;
+    }
+
     try {
       if (editingSegment) {
         await api.updateSegment(editingSegment.id, formData);
+        alert('Segmento atualizado com sucesso!');
       } else {
         await api.createSegment(formData);
+        alert('Segmento criado com sucesso!');
       }
       handleCloseModal();
       fetchSegments(pagination.page);
     } catch (error) {
       console.error('Failed to save segment:', error);
+      alert(`Erro ao salvar segmento: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 

@@ -85,16 +85,26 @@ export default function SeriesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação básica
+    if (!formData.name || !formData.code || !formData.level) {
+      alert('Por favor, preencha os campos obrigatórios: Nome, Código e Nível');
+      return;
+    }
+
     try {
       if (editingSeries) {
         await api.updateSeries(editingSeries.id, formData);
+        alert('Série atualizada com sucesso!');
       } else {
         await api.createSeries(formData);
+        alert('Série criada com sucesso!');
       }
       handleCloseModal();
       fetchSeries(pagination.page);
     } catch (error) {
       console.error('Failed to save series:', error);
+      alert(`Erro ao salvar série: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
