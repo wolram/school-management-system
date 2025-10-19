@@ -102,14 +102,57 @@ export default function StudentsPage() {
     }
   };
 
-  // Converter data do formato ISO para YYYY-MM-DD (input date)
+  // Converter data do formato ISO para DD/MM/YYYY (formato brasileiro)
   const formatDateForInput = (isoDate: string): string => {
     if (!isoDate) return '';
     const date = new Date(isoDate);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
+    return `${day}/${month}/${year}`;
+  };
+
+  // Converter DD/MM/YYYY para YYYY-MM-DD (formato ISO para API)
+  const parseBrazilianDate = (brDate: string): string => {
+    if (!brDate) return '';
+    // Remove caracteres não numéricos
+    const cleaned = brDate.replace(/\D/g, '');
+    if (cleaned.length !== 8) return '';
+
+    const day = cleaned.substring(0, 2);
+    const month = cleaned.substring(2, 4);
+    const year = cleaned.substring(4, 8);
+
+    // Validar data
+    const dayNum = parseInt(day);
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(year);
+
+    if (dayNum < 1 || dayNum > 31) return '';
+    if (monthNum < 1 || monthNum > 12) return '';
+    if (yearNum < 1900 || yearNum > new Date().getFullYear()) return '';
+
     return `${year}-${month}-${day}`;
+  };
+
+  // Aplicar máscara DD/MM/YYYY enquanto digita
+  const handleDateChange = (value: string) => {
+    // Remove tudo que não é número
+    let cleaned = value.replace(/\D/g, '');
+
+    // Limita a 8 dígitos (DDMMYYYY)
+    cleaned = cleaned.substring(0, 8);
+
+    // Aplica a máscara
+    let formatted = cleaned;
+    if (cleaned.length >= 3) {
+      formatted = cleaned.substring(0, 2) + '/' + cleaned.substring(2);
+    }
+    if (cleaned.length >= 5) {
+      formatted = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4) + '/' + cleaned.substring(4);
+    }
+
+    setFormData({ ...formData, dateOfBirth: formatted });
   };
 
   const handleOpenModal = (student?: Student) => {
@@ -156,14 +199,26 @@ export default function StudentsPage() {
       return;
     }
 
+    // Converter data brasileira para ISO
+    const isoDate = parseBrazilianDate(formData.dateOfBirth);
+    if (!isoDate) {
+      alert('Data de nascimento inválida. Use o formato DD/MM/AAAA');
+      return;
+    }
+
     try {
+      const dataToSend = {
+        ...formData,
+        dateOfBirth: isoDate, // Envia no formato ISO para o backend
+      };
+
       if (editingStudent) {
         console.log('Atualizando aluno:', editingStudent.id);
-        await api.updateStudent(editingStudent.id, formData);
+        await api.updateStudent(editingStudent.id, dataToSend);
         alert('Aluno atualizado com sucesso!');
       } else {
         console.log('Criando novo aluno...');
-        const result = await api.createStudent(formData);
+        const result = await api.createStudent(dataToSend);
         console.log('Resposta:', result);
         alert('Aluno adicionado com sucesso!');
       }
@@ -367,16 +422,16 @@ export default function StudentsPage() {
                   Data de Nascimento * (DD/MM/AAAA)
                 </label>
                 <input
-                  type="date"
+                  type="text"
                   value={formData.dateOfBirth}
-                  onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                  onChange={(e) => handleDateChange(e.target.value)}
                   required
-                  max={new Date().toISOString().split('T')[0]}
+                  placeholder="DD/MM/AAAA"
+                  maxLength={10}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                  placeholder="dd/mm/aaaa"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Use o calendário ou digite no formato solicitado pelo navegador
+                  Digite a data no formato: 17/10/2015
                 </p>
               </div>
 
