@@ -31,10 +31,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Check for existing token on mount
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
+    const savedUser = localStorage.getItem('user');
+
     if (savedToken) {
       setToken(savedToken);
       api.setToken(savedToken);
     }
+
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Failed to parse saved user:', error);
+        localStorage.removeItem('user');
+      }
+    }
+
     setIsLoading(false);
   }, []);
 
