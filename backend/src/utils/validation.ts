@@ -100,8 +100,8 @@ export const priceSchema = z.object({
 
 // Filtros de paginação
 export const paginationSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  limit: z.number().int().min(1).max(100).default(10),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
   sortBy: z.string().optional(),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
@@ -138,8 +138,32 @@ export const seriesSchema = z.object({
   segmentId: z.string().cuid('ID do segmento inválido'),
 });
 
+const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
+
 export const classSchema = z.object({
   name: z.string().min(1, 'Nome da turma é obrigatório'),
-  capacity: z.number().int().min(1, 'Capacidade deve ser no mínimo 1'),
   seriesId: z.string().cuid('ID da série inválido'),
+  defaultEntryTime: z
+    .string()
+    .regex(timeRegex, 'Horário de entrada inválido (use HH:mm)'),
+  defaultExitTime: z
+    .string()
+    .regex(timeRegex, 'Horário de saída inválido (use HH:mm)'),
+  active: z.boolean().optional(),
+});
+
+// ═══════════════════════════════════════════════════════════════
+// TEACHER MODULE SCHEMAS
+// ═══════════════════════════════════════════════════════════════
+
+export const teacherSchema = z.object({
+  name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
+  email: emailSchema,
+  phone: z.string().optional(),
+  dateOfBirth: z.coerce.date(),
+  hireDate: z.coerce.date(),
+  specialization: z.string().min(2, 'Especialidade deve ter no mínimo 2 caracteres'),
+  salary: z.number().positive('Salário deve ser positivo'),
+  contractType: z.enum(['CLT', 'PJ', 'ESTAGIARIO', 'TEMPORARIO']).default('CLT'),
+  status: z.enum(['ATIVO', 'INATIVO', 'FERIAS', 'LICENCA']).default('ATIVO'),
 });

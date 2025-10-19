@@ -94,6 +94,21 @@ export const seriesService = {
     return { series, total, page, limit };
   },
 
+  // Get all series with pagination
+  async getAllSeries(page: number = 1, limit: number = 50) {
+    const skip = (page - 1) * limit;
+    const [series, total] = await Promise.all([
+      prisma.series.findMany({
+        skip,
+        take: limit,
+        include: { segment: true, classes: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.series.count(),
+    ]);
+    return { series, total, page, limit };
+  },
+
   // Get series by ID
   async getSeriesById(id: string) {
     const series = await prisma.series.findUnique({
@@ -131,8 +146,10 @@ export const classService = {
     const schoolClass = await prisma.class.create({
       data: {
         name: data.name,
-        capacity: data.capacity,
         seriesId: data.seriesId,
+        defaultEntryTime: data.defaultEntryTime,
+        defaultExitTime: data.defaultExitTime,
+        active: data.active ?? true,
       },
       include: { series: { include: { segment: true } } },
     });

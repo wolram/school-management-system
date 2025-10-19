@@ -250,3 +250,36 @@ enum EmailStatus {
   SENT
   FAILED
 }
+
+// ============ PROFESSORES ============
+model Teacher {
+  id                    String          @id @default(cuid())
+  name                  String
+  email                 String          @unique
+  phone                 String?
+  dateOfBirth           DateTime
+  hireDate              DateTime        // Data de admissão
+  specialization        String          // Especialidade (ex: Matemática, Português)
+  salary                Decimal         @db.Decimal(10, 2)
+  contractType          ContractType    @default(CLT)
+  status                TeacherStatus   @default(ATIVO)
+  active                Boolean         @default(true)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@map("teachers")
+}
+
+enum ContractType {
+  CLT
+  PJ
+  ESTAGIARIO
+  TEMPORARIO
+}
+
+enum TeacherStatus {
+  ATIVO
+  INATIVO
+  FERIAS
+  LICENCA
+}

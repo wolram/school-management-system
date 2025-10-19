@@ -21,12 +21,15 @@ export default function DashboardLayout({
   };
 
   const navItems = [
-    { href: '/dashboard', label: 'Painel', icon: '■' },
-    { href: '/dashboard/students', label: 'Alunos', icon: '■' },
-    { href: '/dashboard/classes', label: 'Turmas', icon: '■' },
-    { href: '/dashboard/series', label: 'Séries', icon: '■' },
-    { href: '/dashboard/segments', label: 'Segmentos', icon: '■' },
-  ];
+    { href: '/dashboard', label: 'Painel', icon: '📊', roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { href: '/dashboard/students', label: 'Alunos', icon: '👨‍🎓', roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { href: '/dashboard/teachers', label: 'Professores', icon: '👨‍🏫', roles: ['ADMIN', 'GERENTE'] },
+    { href: '/dashboard/classes', label: 'Turmas', icon: '🏫', roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { href: '/dashboard/series', label: 'Séries', icon: '📚', roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { href: '/dashboard/segments', label: 'Segmentos', icon: '📋', roles: ['ADMIN', 'GERENTE'] },
+    { href: '/dashboard/prices', label: 'Preços', icon: '💰', roles: ['ADMIN', 'GERENTE'] },
+    { href: '/dashboard/calculations', label: 'Cálculos', icon: '🧮', roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+  ].filter(item => item.roles.includes(user?.profile || ''));
 
   const isActive = (href: string) => pathname === href;
 

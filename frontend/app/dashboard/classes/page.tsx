@@ -6,10 +6,10 @@ import { api } from '@/lib/api';
 interface Class {
   id: string;
   name: string;
-  code: string;
   seriesId: string;
-  capacity: number;
-  status: string;
+  defaultEntryTime: string;
+  defaultExitTime: string;
+  active: boolean;
 }
 
 interface PaginationData {
@@ -32,10 +32,10 @@ export default function ClassesPage() {
   const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    code: '',
     seriesId: '',
-    capacity: 30,
-    status: 'ATIVO',
+    defaultEntryTime: '08:00',
+    defaultExitTime: '12:00',
+    active: true,
   });
 
   useEffect(() => {
@@ -64,19 +64,19 @@ export default function ClassesPage() {
       setEditingClass(classItem);
       setFormData({
         name: classItem.name,
-        code: classItem.code,
         seriesId: classItem.seriesId,
-        capacity: classItem.capacity,
-        status: classItem.status,
+        defaultEntryTime: classItem.defaultEntryTime,
+        defaultExitTime: classItem.defaultExitTime,
+        active: classItem.active,
       });
     } else {
       setEditingClass(null);
       setFormData({
         name: '',
-        code: '',
         seriesId: '',
-        capacity: 30,
-        status: 'ATIVO',
+        defaultEntryTime: '08:00',
+        defaultExitTime: '12:00',
+        active: true,
       });
     }
     setShowModal(true);
@@ -89,21 +89,31 @@ export default function ClassesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação básica
+    if (!formData.name || !formData.seriesId || !formData.defaultEntryTime || !formData.defaultExitTime) {
+      alert('Por favor, preencha os campos obrigatórios: Nome, Série, Horário de Entrada e Horário de Saída');
+      return;
+    }
+
     try {
       if (editingClass) {
         await api.updateClass(editingClass.id, formData);
+        alert('Turma atualizada com sucesso!');
       } else {
         await api.createClass(formData);
+        alert('Turma criada com sucesso!');
       }
       handleCloseModal();
       fetchClasses(pagination.page);
     } catch (error) {
       console.error('Failed to save class:', error);
+      alert(`Erro ao salvar turma: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this class?')) {
+    if (confirm('Tem certeza que deseja excluir esta turma?')) {
       try {
         await api.deleteClass(id);
         fetchClasses(pagination.page);
@@ -117,12 +127,12 @@ export default function ClassesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Classes Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Gestão de Turmas</h1>
         <button
           onClick={() => handleOpenModal()}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
         >
-          ➕ Add Class
+          ➕ Adicionar Turma
         </button>
       </div>
 
@@ -130,11 +140,11 @@ export default function ClassesPage() {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">Loading classes...</p>
+            <p className="text-gray-500">Carregando turmas...</p>
           </div>
         ) : classes.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">No classes found.</p>
+            <p className="text-gray-500">Nenhuma turma encontrada.</p>
           </div>
         ) : (
           <>
@@ -143,22 +153,22 @@ export default function ClassesPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Name
+                      Nome
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Code
+                      ID da Série
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Series ID
+                      Horário de Entrada
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Capacity
+                      Horário de Saída
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Actions
+                      Ações
                     </th>
                   </tr>
                 </thead>
@@ -169,23 +179,23 @@ export default function ClassesPage() {
                         {classItem.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {classItem.code}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {classItem.seriesId}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {classItem.capacity}
+                        {classItem.defaultEntryTime}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {classItem.defaultExitTime}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            classItem.status === 'ATIVO'
+                            classItem.active
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
                           }`}
                         >
-                          {classItem.status}
+                          {classItem.active ? 'Ativo' : 'Inativo'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
@@ -193,13 +203,13 @@ export default function ClassesPage() {
                           onClick={() => handleOpenModal(classItem)}
                           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors text-xs"
                         >
-                          ✏️ Edit
+                          ✏️ Editar
                         </button>
                         <button
                           onClick={() => handleDelete(classItem.id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors text-xs"
                         >
-                          🗑️ Delete
+                          🗑️ Excluir
                         </button>
                       </td>
                     </tr>
@@ -211,9 +221,9 @@ export default function ClassesPage() {
             {/* Pagination */}
             <div className="bg-gray-50 px-6 py-4 flex items-center justify-between">
               <p className="text-sm text-gray-600">
-                Showing {(pagination.page - 1) * pagination.pageSize + 1} to{' '}
-                {Math.min(pagination.page * pagination.pageSize, pagination.total)} of{' '}
-                {pagination.total} classes
+                Mostrando {(pagination.page - 1) * pagination.pageSize + 1} até{' '}
+                {Math.min(pagination.page * pagination.pageSize, pagination.total)} de{' '}
+                {pagination.total} turmas
               </p>
               <div className="space-x-2">
                 <button
@@ -221,17 +231,17 @@ export default function ClassesPage() {
                   disabled={pagination.page === 1}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Previous
+                  Anterior
                 </button>
                 <span className="px-3 py-1">
-                  Page {pagination.page} of {pagination.totalPages}
+                  Página {pagination.page} de {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => fetchClasses(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Next
+                  Próxima
                 </button>
               </div>
             </div>
@@ -244,57 +254,59 @@ export default function ClassesPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold mb-4">
-              {editingClass ? 'Edit Class' : 'Add New Class'}
+              {editingClass ? 'Editar Turma' : 'Adicionar Nova Turma'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
+                  Nome *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
+                  placeholder="Ex: Turma A, Turma Almôndega"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Code *
-                </label>
-                <input
-                  type="text"
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Series ID *
+                  ID da Série *
                 </label>
                 <input
                   type="text"
                   value={formData.seriesId}
                   onChange={(e) => setFormData({ ...formData, seriesId: e.target.value })}
                   required
+                  placeholder="Cole o ID da série aqui"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Capacity
+                  Horário de Entrada *
                 </label>
                 <input
-                  type="number"
-                  value={formData.capacity}
-                  onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
-                  min="1"
+                  type="time"
+                  value={formData.defaultEntryTime}
+                  onChange={(e) => setFormData({ ...formData, defaultEntryTime: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Horário de Saída *
+                </label>
+                <input
+                  type="time"
+                  value={formData.defaultExitTime}
+                  onChange={(e) => setFormData({ ...formData, defaultExitTime: e.target.value })}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
@@ -304,12 +316,12 @@ export default function ClassesPage() {
                   Status
                 </label>
                 <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  value={formData.active ? 'true' : 'false'}
+                  onChange={(e) => setFormData({ ...formData, active: e.target.value === 'true' })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 >
-                  <option value="ATIVO">Active</option>
-                  <option value="INATIVO">Inactive</option>
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
                 </select>
               </div>
 
@@ -318,14 +330,14 @@ export default function ClassesPage() {
                   type="submit"
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
                 >
-                  {editingClass ? 'Update' : 'Create'}
+                  {editingClass ? 'Atualizar' : 'Criar'}
                 </button>
                 <button
                   type="button"
                   onClick={handleCloseModal}
                   className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 rounded-lg transition-colors"
                 >
-                  Cancel
+                  Cancelar
                 </button>
               </div>
             </form>

@@ -182,6 +182,31 @@ export const getSeriesBySegment = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllSeries = async (req: Request, res: Response) => {
+  try {
+    const { page = 1, limit = 50 } = paginationSchema.parse(req.query);
+    const result = await seriesService.getAllSeries(page, limit);
+
+    res.json({
+      success: true,
+      data: result.series,
+      pagination: {
+        total: result.total,
+        page: result.page,
+        limit: result.limit,
+        totalPages: Math.ceil(result.total / result.limit),
+      },
+      timestamp: new Date(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro ao listar séries',
+      timestamp: new Date(),
+    });
+  }
+};
+
 export const getSeriesById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

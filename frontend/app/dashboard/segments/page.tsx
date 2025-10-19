@@ -85,21 +85,31 @@ export default function SegmentsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação básica
+    if (!formData.name || !formData.code) {
+      alert('Por favor, preencha os campos obrigatórios: Nome e Código');
+      return;
+    }
+
     try {
       if (editingSegment) {
         await api.updateSegment(editingSegment.id, formData);
+        alert('Segmento atualizado com sucesso!');
       } else {
         await api.createSegment(formData);
+        alert('Segmento criado com sucesso!');
       }
       handleCloseModal();
       fetchSegments(pagination.page);
     } catch (error) {
       console.error('Failed to save segment:', error);
+      alert(`Erro ao salvar segmento: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this segment?')) {
+    if (confirm('Tem certeza que deseja excluir este segmento?')) {
       try {
         await api.deleteSegment(id);
         fetchSegments(pagination.page);
@@ -113,12 +123,12 @@ export default function SegmentsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Segments Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Gestão de Segmentos</h1>
         <button
           onClick={() => handleOpenModal()}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
         >
-          ➕ Add Segment
+          ➕ Adicionar Segmento
         </button>
       </div>
 
@@ -126,11 +136,11 @@ export default function SegmentsPage() {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">Loading segments...</p>
+            <p className="text-gray-500">Carregando segmentos...</p>
           </div>
         ) : segments.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">No segments found.</p>
+            <p className="text-gray-500">Nenhum segmento encontrado.</p>
           </div>
         ) : (
           <>
@@ -139,19 +149,19 @@ export default function SegmentsPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Name
+                      Nome
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Code
+                      Código
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Description
+                      Descrição
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Actions
+                      Ações
                     </th>
                   </tr>
                 </thead>
@@ -183,13 +193,13 @@ export default function SegmentsPage() {
                           onClick={() => handleOpenModal(segment)}
                           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors text-xs"
                         >
-                          ✏️ Edit
+                          ✏️ Editar
                         </button>
                         <button
                           onClick={() => handleDelete(segment.id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors text-xs"
                         >
-                          🗑️ Delete
+                          🗑️ Excluir
                         </button>
                       </td>
                     </tr>
@@ -201,9 +211,9 @@ export default function SegmentsPage() {
             {/* Pagination */}
             <div className="bg-gray-50 px-6 py-4 flex items-center justify-between">
               <p className="text-sm text-gray-600">
-                Showing {(pagination.page - 1) * pagination.pageSize + 1} to{' '}
-                {Math.min(pagination.page * pagination.pageSize, pagination.total)} of{' '}
-                {pagination.total} segments
+                Mostrando {(pagination.page - 1) * pagination.pageSize + 1} até{' '}
+                {Math.min(pagination.page * pagination.pageSize, pagination.total)} de{' '}
+                {pagination.total} segmentos
               </p>
               <div className="space-x-2">
                 <button
@@ -211,17 +221,17 @@ export default function SegmentsPage() {
                   disabled={pagination.page === 1}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Previous
+                  Anterior
                 </button>
                 <span className="px-3 py-1">
-                  Page {pagination.page} of {pagination.totalPages}
+                  Página {pagination.page} de {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => fetchSegments(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Next
+                  Próxima
                 </button>
               </div>
             </div>
@@ -234,12 +244,12 @@ export default function SegmentsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold mb-4">
-              {editingSegment ? 'Edit Segment' : 'Add New Segment'}
+              {editingSegment ? 'Editar Segmento' : 'Adicionar Novo Segmento'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
+                  Nome *
                 </label>
                 <input
                   type="text"
@@ -252,7 +262,7 @@ export default function SegmentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Code *
+                  Código *
                 </label>
                 <input
                   type="text"
@@ -265,7 +275,7 @@ export default function SegmentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  Descrição
                 </label>
                 <textarea
                   value={formData.description}
@@ -284,8 +294,8 @@ export default function SegmentsPage() {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 >
-                  <option value="ATIVO">Active</option>
-                  <option value="INATIVO">Inactive</option>
+                  <option value="ATIVO">Ativo</option>
+                  <option value="INATIVO">Inativo</option>
                 </select>
               </div>
 
@@ -294,14 +304,14 @@ export default function SegmentsPage() {
                   type="submit"
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
                 >
-                  {editingSegment ? 'Update' : 'Create'}
+                  {editingSegment ? 'Atualizar' : 'Criar'}
                 </button>
                 <button
                   type="button"
                   onClick={handleCloseModal}
                   className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 rounded-lg transition-colors"
                 >
-                  Cancel
+                  Cancelar
                 </button>
               </div>
             </form>

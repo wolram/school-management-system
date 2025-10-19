@@ -102,12 +102,65 @@ export default function StudentsPage() {
     }
   };
 
+  // Converter data do formato ISO para DD/MM/YYYY (formato brasileiro)
+  const formatDateForInput = (isoDate: string): string => {
+    if (!isoDate) return '';
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${day}/${month}/${year}`;
+  };
+
+  // Converter DD/MM/YYYY para YYYY-MM-DD (formato ISO para API)
+  const parseBrazilianDate = (brDate: string): string => {
+    if (!brDate) return '';
+    // Remove caracteres não numéricos
+    const cleaned = brDate.replace(/\D/g, '');
+    if (cleaned.length !== 8) return '';
+
+    const day = cleaned.substring(0, 2);
+    const month = cleaned.substring(2, 4);
+    const year = cleaned.substring(4, 8);
+
+    // Validar data
+    const dayNum = parseInt(day);
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(year);
+
+    if (dayNum < 1 || dayNum > 31) return '';
+    if (monthNum < 1 || monthNum > 12) return '';
+    if (yearNum < 1900 || yearNum > new Date().getFullYear()) return '';
+
+    return `${year}-${month}-${day}`;
+  };
+
+  // Aplicar máscara DD/MM/YYYY enquanto digita
+  const handleDateChange = (value: string) => {
+    // Remove tudo que não é número
+    let cleaned = value.replace(/\D/g, '');
+
+    // Limita a 8 dígitos (DDMMYYYY)
+    cleaned = cleaned.substring(0, 8);
+
+    // Aplica a máscara
+    let formatted = cleaned;
+    if (cleaned.length >= 3) {
+      formatted = cleaned.substring(0, 2) + '/' + cleaned.substring(2);
+    }
+    if (cleaned.length >= 5) {
+      formatted = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4) + '/' + cleaned.substring(4);
+    }
+
+    setFormData({ ...formData, dateOfBirth: formatted });
+  };
+
   const handleOpenModal = (student?: Student) => {
     if (student) {
       setEditingStudent(student);
       setFormData({
         name: student.name,
-        dateOfBirth: student.dateOfBirth,
+        dateOfBirth: formatDateForInput(student.dateOfBirth),
         seriesId: student.seriesId || '',
         classId: student.classId || '',
         guardianName: student.guardianName || '',
@@ -146,14 +199,26 @@ export default function StudentsPage() {
       return;
     }
 
+    // Converter data brasileira para ISO
+    const isoDate = parseBrazilianDate(formData.dateOfBirth);
+    if (!isoDate) {
+      alert('Data de nascimento inválida. Use o formato DD/MM/AAAA');
+      return;
+    }
+
     try {
+      const dataToSend = {
+        ...formData,
+        dateOfBirth: isoDate, // Envia no formato ISO para o backend
+      };
+
       if (editingStudent) {
         console.log('Atualizando aluno:', editingStudent.id);
-        await api.updateStudent(editingStudent.id, formData);
+        await api.updateStudent(editingStudent.id, dataToSend);
         alert('Aluno atualizado com sucesso!');
       } else {
         console.log('Criando novo aluno...');
-        const result = await api.createStudent(formData);
+        const result = await api.createStudent(dataToSend);
         console.log('Resposta:', result);
         alert('Aluno adicionado com sucesso!');
       }
@@ -166,7 +231,7 @@ export default function StudentsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this student?')) {
+    if (confirm('Tem certeza que deseja excluir este aluno?')) {
       try {
         await api.deleteStudent(id);
         fetchStudents(pagination.page);
@@ -213,7 +278,7 @@ export default function StudentsPage() {
             }}
             className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
           >
-            Clear
+            Limpar
           </button>
         )}
       </form>
@@ -222,11 +287,11 @@ export default function StudentsPage() {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">Loading students...</p>
+            <p className="text-gray-500">Carregando alunos...</p>
           </div>
         ) : students.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500">No students found.</p>
+            <p className="text-gray-500">Nenhum aluno encontrado.</p>
           </div>
         ) : (
           <>
@@ -303,9 +368,9 @@ export default function StudentsPage() {
             {/* Pagination */}
             <div className="bg-gray-50 px-6 py-4 flex items-center justify-between">
               <p className="text-sm text-gray-600">
-                Showing {(pagination.page - 1) * pagination.pageSize + 1} to{' '}
-                {Math.min(pagination.page * pagination.pageSize, pagination.total)} of{' '}
-                {pagination.total} students
+                Mostrando {(pagination.page - 1) * pagination.pageSize + 1} até{' '}
+                {Math.min(pagination.page * pagination.pageSize, pagination.total)} de{' '}
+                {pagination.total} alunos
               </p>
               <div className="space-x-2">
                 <button
@@ -313,17 +378,17 @@ export default function StudentsPage() {
                   disabled={pagination.page === 1}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Previous
+                  Anterior
                 </button>
                 <span className="px-3 py-1">
-                  Page {pagination.page} of {pagination.totalPages}
+                  Página {pagination.page} de {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => fetchStudents(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
                   className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
                 >
-                  Next
+                  Próxima
                 </button>
               </div>
             </div>
@@ -354,15 +419,20 @@ export default function StudentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Data de Nascimento *
+                  Data de Nascimento * (DD/MM/AAAA)
                 </label>
                 <input
-                  type="date"
+                  type="text"
                   value={formData.dateOfBirth}
-                  onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                  onChange={(e) => handleDateChange(e.target.value)}
                   required
+                  placeholder="DD/MM/AAAA"
+                  maxLength={10}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Digite a data no formato: 17/10/2015
+                </p>
               </div>
 
               <div>

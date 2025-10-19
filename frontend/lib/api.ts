@@ -75,6 +75,60 @@ export interface Class {
   active: boolean;
 }
 
+export interface Price {
+  id: string;
+  type: 'MENSALIDADE' | 'SERVICO' | 'HORA_EXTRA';
+  seriesId?: string;
+  serviceName?: string;
+  value: number;
+  valuePerHour?: number;
+  effectiveDate: string;
+  active: boolean;
+  series?: {
+    id: string;
+    name: string;
+    segment: {
+      id: string;
+      name: string;
+    };
+  };
+}
+
+export interface BudgetBreakdown {
+  mensalidade: number;
+  servicosContratados: {
+    nome: string;
+    valor: number;
+  }[];
+  horasExtras: {
+    totalHoras: number;
+    valorPorHora: number;
+    subtotal: number;
+  };
+  totalGeral: number;
+  detalhamentoDias: {
+    data: string;
+    horasExtras: number;
+    diaSemana: number;
+  }[];
+}
+
+export interface Teacher {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  dateOfBirth: string;
+  hireDate: string;
+  specialization: string;
+  salary: number;
+  contractType: 'CLT' | 'PJ' | 'ESTAGIARIO' | 'TEMPORARIO';
+  status: 'ATIVO' | 'INATIVO' | 'FERIAS' | 'LICENCA';
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 class ApiClient {
   private token: string | null = null;
 
@@ -269,6 +323,121 @@ class ApiClient {
     return this.request(`/api/academic/series/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  // ==================== PRICES ====================
+  async getPrices(filters?: any): Promise<ApiResponse<Price[]>> {
+    const params = new URLSearchParams(filters || {});
+    return this.request(`/api/prices?${params.toString()}`);
+  }
+
+  async getPrice(id: string): Promise<ApiResponse<Price>> {
+    return this.request(`/api/prices/${id}`);
+  }
+
+  async createPrice(data: Partial<Price>): Promise<ApiResponse<Price>> {
+    return this.request('/api/prices', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePrice(id: string, data: Partial<Price>): Promise<ApiResponse<Price>> {
+    return this.request(`/api/prices/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deletePrice(id: string): Promise<ApiResponse<any>> {
+    return this.request(`/api/prices/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getPricesBySeries(seriesId: string): Promise<ApiResponse<Price[]>> {
+    return this.request(`/api/prices/series/${seriesId}`);
+  }
+
+  async getPriceHistory(type: string, seriesId?: string, serviceName?: string): Promise<ApiResponse<Price[]>> {
+    const params = new URLSearchParams({ type });
+    if (seriesId) params.append('seriesId', seriesId);
+    if (serviceName) params.append('serviceName', serviceName);
+    return this.request(`/api/prices/history?${params.toString()}`);
+  }
+
+  // ==================== TEACHERS ====================
+  async getTeachers(page: number = 1, limit: number = 10, filters?: any): Promise<ApiResponse<Teacher[]>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...filters,
+    });
+    return this.request(`/api/teachers?${params.toString()}`);
+  }
+
+  async getTeacher(id: string): Promise<ApiResponse<Teacher>> {
+    return this.request(`/api/teachers/${id}`);
+  }
+
+  async createTeacher(data: Partial<Teacher>): Promise<ApiResponse<Teacher>> {
+    return this.request('/api/teachers', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateTeacher(id: string, data: Partial<Teacher>): Promise<ApiResponse<Teacher>> {
+    return this.request(`/api/teachers/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteTeacher(id: string): Promise<ApiResponse<any>> {
+    return this.request(`/api/teachers/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async searchTeachers(query: string): Promise<ApiResponse<Teacher[]>> {
+    return this.request(`/api/teachers/search?query=${encodeURIComponent(query)}`);
+  }
+
+  async getTeachersByStatus(status: string): Promise<ApiResponse<Teacher[]>> {
+    return this.request(`/api/teachers/status/${status}`);
+  }
+
+  // ==================== CALCULATIONS ====================
+  async calculateExtraHours(data: {
+    studentId: string;
+    date: string;
+    realEntryTime: string;
+    realExitTime: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/api/calculations/extra-hours', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMonthlyBudget(studentId: string, month: number, year: number): Promise<ApiResponse<BudgetBreakdown>> {
+    return this.request(`/api/calculations/budget/${studentId}?month=${month}&year=${year}`);
+  }
+
+  async simulateContract(data: any): Promise<ApiResponse<any>> {
+    return this.request('/api/calculations/simulate', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getExtraHoursHistory(studentId: string, startDate: string, endDate: string): Promise<ApiResponse<any[]>> {
+    return this.request(`/api/calculations/history/${studentId}?startDate=${startDate}&endDate=${endDate}`);
+  }
+
+  async exportMonthlyReport(studentId: string, month: number, year: number): Promise<ApiResponse<any>> {
+    return this.request(`/api/calculations/export/${studentId}?month=${month}&year=${year}`);
   }
 
   // ==================== HEALTH ====================
