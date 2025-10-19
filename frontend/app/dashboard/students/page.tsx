@@ -102,12 +102,22 @@ export default function StudentsPage() {
     }
   };
 
+  // Converter data do formato ISO para YYYY-MM-DD (input date)
+  const formatDateForInput = (isoDate: string): string => {
+    if (!isoDate) return '';
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleOpenModal = (student?: Student) => {
     if (student) {
       setEditingStudent(student);
       setFormData({
         name: student.name,
-        dateOfBirth: student.dateOfBirth,
+        dateOfBirth: formatDateForInput(student.dateOfBirth),
         seriesId: student.seriesId || '',
         classId: student.classId || '',
         guardianName: student.guardianName || '',
@@ -354,15 +364,20 @@ export default function StudentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Data de Nascimento *
+                  Data de Nascimento * (DD/MM/AAAA)
                 </label>
                 <input
                   type="date"
                   value={formData.dateOfBirth}
                   onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                   required
+                  max={new Date().toISOString().split('T')[0]}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                  placeholder="dd/mm/aaaa"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Use o calendário ou digite no formato solicitado pelo navegador
+                </p>
               </div>
 
               <div>
