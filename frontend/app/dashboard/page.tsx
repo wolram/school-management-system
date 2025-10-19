@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
@@ -13,6 +14,7 @@ interface Stats {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<Stats>({
     totalStudents: 0,
     activeStudents: 0,
@@ -114,13 +116,22 @@ export default function DashboardPage() {
       <div className="bg-gray-50 rounded-lg shadow-lg p-8 border border-gray-200">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 font-heading">Ações Rápidas</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="bg-accent-500 hover:bg-accent-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md">
+          <button
+            onClick={() => router.push('/dashboard/segments')}
+            className="bg-accent-500 hover:bg-accent-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md"
+          >
             Configurações
           </button>
-          <button className="bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md">
+          <button
+            onClick={() => router.push('/dashboard/calculations')}
+            className="bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md"
+          >
             Relatórios
           </button>
-          <button className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md">
+          <button
+            onClick={() => router.push('/dashboard/students')}
+            className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md"
+          >
             Adicionar Aluno
           </button>
         </div>
