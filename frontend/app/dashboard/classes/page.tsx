@@ -6,10 +6,10 @@ import { api } from '@/lib/api';
 interface Class {
   id: string;
   name: string;
-  code: string;
   seriesId: string;
-  capacity: number;
-  status: string;
+  defaultEntryTime: string;
+  defaultExitTime: string;
+  active: boolean;
 }
 
 interface PaginationData {
@@ -32,10 +32,10 @@ export default function ClassesPage() {
   const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    code: '',
     seriesId: '',
-    capacity: 30,
-    status: 'ATIVO',
+    defaultEntryTime: '08:00',
+    defaultExitTime: '12:00',
+    active: true,
   });
 
   useEffect(() => {
@@ -64,19 +64,19 @@ export default function ClassesPage() {
       setEditingClass(classItem);
       setFormData({
         name: classItem.name,
-        code: classItem.code,
         seriesId: classItem.seriesId,
-        capacity: classItem.capacity,
-        status: classItem.status,
+        defaultEntryTime: classItem.defaultEntryTime,
+        defaultExitTime: classItem.defaultExitTime,
+        active: classItem.active,
       });
     } else {
       setEditingClass(null);
       setFormData({
         name: '',
-        code: '',
         seriesId: '',
-        capacity: 30,
-        status: 'ATIVO',
+        defaultEntryTime: '08:00',
+        defaultExitTime: '12:00',
+        active: true,
       });
     }
     setShowModal(true);
@@ -91,8 +91,8 @@ export default function ClassesPage() {
     e.preventDefault();
 
     // Validação básica
-    if (!formData.name || !formData.code || !formData.seriesId) {
-      alert('Por favor, preencha os campos obrigatórios: Nome, Código e ID da Série');
+    if (!formData.name || !formData.seriesId || !formData.defaultEntryTime || !formData.defaultExitTime) {
+      alert('Por favor, preencha os campos obrigatórios: Nome, Série, Horário de Entrada e Horário de Saída');
       return;
     }
 
@@ -156,13 +156,13 @@ export default function ClassesPage() {
                       Nome
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Código
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       ID da Série
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Capacidade
+                      Horário de Entrada
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Horário de Saída
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       Status
@@ -179,23 +179,23 @@ export default function ClassesPage() {
                         {classItem.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {classItem.code}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {classItem.seriesId}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {classItem.capacity}
+                        {classItem.defaultEntryTime}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {classItem.defaultExitTime}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            classItem.status === 'ATIVO'
+                            classItem.active
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
                           }`}
                         >
-                          {classItem.status}
+                          {classItem.active ? 'Ativo' : 'Inativo'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
@@ -266,19 +266,7 @@ export default function ClassesPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Código *
-                </label>
-                <input
-                  type="text"
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                  required
+                  placeholder="Ex: Turma A, Turma Almôndega"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
@@ -292,19 +280,33 @@ export default function ClassesPage() {
                   value={formData.seriesId}
                   onChange={(e) => setFormData({ ...formData, seriesId: e.target.value })}
                   required
+                  placeholder="Cole o ID da série aqui"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Capacidade
+                  Horário de Entrada *
                 </label>
                 <input
-                  type="number"
-                  value={formData.capacity}
-                  onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
-                  min="1"
+                  type="time"
+                  value={formData.defaultEntryTime}
+                  onChange={(e) => setFormData({ ...formData, defaultEntryTime: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Horário de Saída *
+                </label>
+                <input
+                  type="time"
+                  value={formData.defaultExitTime}
+                  onChange={(e) => setFormData({ ...formData, defaultExitTime: e.target.value })}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
@@ -314,12 +316,12 @@ export default function ClassesPage() {
                   Status
                 </label>
                 <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  value={formData.active ? 'true' : 'false'}
+                  onChange={(e) => setFormData({ ...formData, active: e.target.value === 'true' })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 >
-                  <option value="ATIVO">Ativo</option>
-                  <option value="INATIVO">Inativo</option>
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
                 </select>
               </div>
 
