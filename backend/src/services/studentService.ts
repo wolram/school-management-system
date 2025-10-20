@@ -24,14 +24,11 @@ export const studentService = {
         name: data.name,
         dateOfBirth: data.dateOfBirth,
         cpf: data.cpf,
-        email: data.guardianEmail || undefined,
-        phone: data.guardianPhone || undefined,
         guardianName: data.guardianName,
         guardianEmail: data.guardianEmail,
         guardianPhone: data.guardianPhone,
         classId: data.classId,
         seriesId: data.seriesId,
-        status: 'ATIVO',
       },
       include: {
         class: { include: { series: { include: { segment: true } } } },
@@ -59,7 +56,7 @@ export const studentService = {
       where.OR = [
         { name: { contains: filters.search, mode: 'insensitive' } },
         { cpf: { contains: filters.search } },
-        { email: { contains: filters.search, mode: 'insensitive' } },
+        { guardianEmail: { contains: filters.search, mode: 'insensitive' } },
       ];
     }
 
@@ -156,16 +153,14 @@ export const studentService = {
     const student = await prisma.student.update({
       where: { id },
       data: {
-        name: data.name,
-        dateOfBirth: data.dateOfBirth,
-        cpf: data.cpf,
-        email: data.guardianEmail,
-        phone: data.guardianPhone,
-        guardianName: data.guardianName,
-        guardianEmail: data.guardianEmail,
-        guardianPhone: data.guardianPhone,
-        classId: data.classId,
-        seriesId: data.seriesId,
+        ...(data.name && { name: data.name }),
+        ...(data.dateOfBirth && { dateOfBirth: data.dateOfBirth }),
+        ...(data.cpf && { cpf: data.cpf }),
+        ...(data.guardianName && { guardianName: data.guardianName }),
+        ...(typeof data.guardianEmail !== 'undefined' && { guardianEmail: data.guardianEmail }),
+        ...(typeof data.guardianPhone !== 'undefined' && { guardianPhone: data.guardianPhone }),
+        ...(data.classId && { classId: data.classId }),
+        ...(data.seriesId && { seriesId: data.seriesId }),
       },
       include: {
         class: { include: { series: { include: { segment: true } } } },
@@ -180,7 +175,10 @@ export const studentService = {
   async changeStudentStatus(id: string, status: 'ATIVO' | 'INATIVO' | 'TRANSFERIDO') {
     const student = await prisma.student.update({
       where: { id },
-      data: { status },
+      data: {
+        status,
+        active: status === 'ATIVO',
+      },
       include: {
         class: { include: { series: { include: { segment: true } } } },
       },
@@ -282,8 +280,12 @@ export const studentService = {
       },
     });
 
-    const totalMinutes = extraHours.reduce((sum, eh) => sum + eh.extraMinutes, 0);
-    const totalCost = extraHours.reduce((sum, eh) => sum + (eh.extraCost?.toNumber() || 0), 0);
+    const totalHours = extraHours.reduce(
+      (sum, eh) => sum + eh.hoursCalculated.toNumber(),
+      0
+    );
+    const totalMinutes = totalHours * 60;
+    const totalCost = 0;
 
     return {
       totalMinutes,
@@ -314,8 +316,8 @@ export const studentService = {
     return {
       class: classInfo,
       totalStudents: students.length,
-      capacity: classInfo?.capacity,
-      occupancy: classInfo ? (students.length / classInfo.capacity) * 100 : 0,
+      capacity: null,
+      occupancy: null,
       students,
     };
   },

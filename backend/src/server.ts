@@ -1,5 +1,5 @@
-import express, { Request, Response } from 'express';
-import cors from 'cors';
+import express, { NextFunction, Request, Response } from 'express';
+import cors, { CorsOptions } from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
 import authRoutes from './routes/auth';
@@ -8,7 +8,9 @@ import studentRoutes from './routes/students';
 import teacherRoutes from './routes/teachers';
 import priceRoutes from './routes/prices';
 import calculationRoutes from './routes/calculations';
+import reportsRoutes from './routes/reports';
 import { prisma } from './config/database';
+import { generalRateLimiter } from './middleware/rateLimit';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,24 +18,32 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // ============ Middlewares Globais ============
 app.use(helmet());
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow any localhost port during development
+const corsOptions: CorsOptions = {
+  origin(origin, callback) {
     if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1')) {
       callback(null, true);
-    } else if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+      return;
     }
+
+    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ============ Rate Limiting Global ============
+app.use(generalRateLimiter);
+
 // ============ Logging Simples ============
-app.use((req: Request, res: Response, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
@@ -116,6 +126,11 @@ app.use('/api/prices', priceRoutes);
  */
 app.use('/api/calculations', calculationRoutes);
 
+/**
+ * Incluir rotas de relatórios (PDF/Excel)
+ */
+app.use('/api/reports', reportsRoutes);
+
 // ============ Tratamento de Erros ============
 
 /**
@@ -133,13 +148,15 @@ app.use((req: Request, res: Response) => {
 /**
  * Error handler global
  */
-app.use((err: any, req: Request, res: Response, next) => {
+app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
   console.error('Erro:', err);
 
-  res.status(err.status || 500).json({
+  const error = err as { status?: number; message?: string; stack?: string };
+
+  res.status(error.status || 500).json({
     success: false,
-    error: err.message || 'Erro interno do servidor',
-    ...(NODE_ENV === 'development' && { stack: err.stack }),
+    error: error.message || 'Erro interno do servidor',
+    ...(NODE_ENV === 'development' && { stack: error.stack }),
     timestamp: new Date(),
   });
 });

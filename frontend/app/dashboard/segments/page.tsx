@@ -47,7 +47,13 @@ export default function SegmentsPage() {
       if (response.data) {
         setSegments(response.data);
         if (response.pagination) {
-          setPagination(response.pagination);
+          const { total, page: currentPage, limit, totalPages } = response.pagination;
+          setPagination({
+            total,
+            page: currentPage,
+            pageSize: limit ?? pagination.pageSize,
+            totalPages,
+          });
         }
       }
     } catch (error) {

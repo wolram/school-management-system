@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authMiddleware, authorize } from '../middleware/auth';
+import { listingRateLimiter, sensitiveApiRateLimiter } from '../middleware/rateLimit';
 import {
   createStudent,
   getAllStudents,
@@ -34,8 +35,9 @@ router.post('/', authMiddleware, authorize('ADMIN', 'GERENTE'), createStudent);
  * GET /api/students
  * List all students with filters and pagination
  * Query: ?classId=xxx&seriesId=xxx&status=ATIVO&search=name&page=1&limit=50
+ * Rate limited: 200 requests por 15 minutos (listing)
  */
-router.get('/', authMiddleware, getAllStudents);
+router.get('/', listingRateLimiter, authMiddleware, getAllStudents);
 
 /**
  * GET /api/students/:id
@@ -58,8 +60,9 @@ router.patch('/:id/status', authMiddleware, authorize('ADMIN', 'GERENTE'), chang
 /**
  * DELETE /api/students/:id
  * Delete student (soft delete - marks as INATIVO)
+ * Rate limited: 30 requests por 15 minutos (sensitive)
  */
-router.delete('/:id', authMiddleware, authorize('ADMIN'), deleteStudent);
+router.delete('/:id', sensitiveApiRateLimiter, authMiddleware, authorize('ADMIN'), deleteStudent);
 
 // ═══════════════════════════════════════════════════════════════
 // STUDENTS BY CLASS/SERIES
@@ -135,7 +138,8 @@ router.get('/class/:classId/composition', authMiddleware, getClassComposition);
  * POST /api/students/bulk/import
  * Bulk import students
  * Body: { students: [{name, dateOfBirth, classId, seriesId, ...}, ...] }
+ * Rate limited: 30 requests por 15 minutos (sensitive)
  */
-router.post('/bulk/import', authMiddleware, authorize('ADMIN'), bulkImportStudents);
+router.post('/bulk/import', sensitiveApiRateLimiter, authMiddleware, authorize('ADMIN'), bulkImportStudents);
 
 export default router;

@@ -140,6 +140,7 @@ model Student {
 enum StudentStatus {
   ATIVO
   INATIVO
+  TRANSFERIDO
 }
 
 // ============ MATRIZ DE CONTRATO (Semanal) ============

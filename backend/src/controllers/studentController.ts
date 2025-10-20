@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { studentService } from '../services/studentService';
 import { createStudentSchema, contractMatrixSchema, paginationSchema } from '../utils/validation';
 import { ZodError } from 'zod';
+import { StudentCreateInput } from '../types';
 
 // ═══════════════════════════════════════════════════════════════
 // STUDENT CONTROLLERS
@@ -9,8 +10,12 @@ import { ZodError } from 'zod';
 
 export const createStudent = async (req: Request, res: Response) => {
   try {
-    const data = createStudentSchema.parse(req.body);
-    const student = await studentService.createStudent(data);
+    const parsedData = createStudentSchema.parse(req.body);
+    const studentData: StudentCreateInput = {
+      ...parsedData,
+      cpf: parsedData.cpf ?? undefined,
+    };
+    const student = await studentService.createStudent(studentData);
 
     res.status(201).json({
       success: true,
@@ -146,8 +151,11 @@ export const getStudentsBySeries = async (req: Request, res: Response) => {
 export const updateStudent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const data = createStudentSchema.partial().parse(req.body);
-    const student = await studentService.updateStudent(id, data);
+    const parsedData = createStudentSchema.partial().parse(req.body);
+    const student = await studentService.updateStudent(id, {
+      ...parsedData,
+      cpf: parsedData.cpf ?? undefined,
+    });
 
     res.json({
       success: true,
