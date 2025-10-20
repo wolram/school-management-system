@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authMiddleware, authorize } from '../middleware/auth';
 import { auditContextMiddleware } from '../middleware/audit';
+import { authRateLimiter, sensitiveApiRateLimiter } from '../middleware/rateLimit';
 import {
   loginController,
   signUpController,
@@ -18,15 +19,17 @@ router.use(auditContextMiddleware);
  * POST /api/auth/login
  * Fazer login com email e senha
  * @public
+ * Rate limited: 5 tentativas por 15 minutos
  */
-router.post('/login', loginController);
+router.post('/login', authRateLimiter, loginController);
 
 /**
  * POST /api/auth/signup
  * Criar novo usuário
  * @requires ADMIN
+ * Rate limited: 30 requests por 15 minutos (sensitive)
  */
-router.post('/signup', authMiddleware, authorize('ADMIN'), signUpController);
+router.post('/signup', sensitiveApiRateLimiter, authMiddleware, authorize('ADMIN'), signUpController);
 
 /**
  * GET /api/auth/me
@@ -46,7 +49,8 @@ router.get('/users', authMiddleware, authorize('ADMIN'), listUsersController);
  * POST /api/auth/change-password
  * Alterar senha do usuário autenticado
  * @requires autenticação
+ * Rate limited: 30 requests por 15 minutos (sensitive)
  */
-router.post('/change-password', authMiddleware, changePasswordController);
+router.post('/change-password', sensitiveApiRateLimiter, authMiddleware, changePasswordController);
 
 export default router;

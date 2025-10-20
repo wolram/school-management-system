@@ -8,7 +8,9 @@ import studentRoutes from './routes/students';
 import teacherRoutes from './routes/teachers';
 import priceRoutes from './routes/prices';
 import calculationRoutes from './routes/calculations';
+import reportsRoutes from './routes/reports';
 import { prisma } from './config/database';
+import { generalRateLimiter } from './middleware/rateLimit';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,6 +38,9 @@ const corsOptions: CorsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ============ Rate Limiting Global ============
+app.use(generalRateLimiter);
 
 // ============ Logging Simples ============
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -120,6 +125,11 @@ app.use('/api/prices', priceRoutes);
  * Incluir rotas de cálculos financeiros
  */
 app.use('/api/calculations', calculationRoutes);
+
+/**
+ * Incluir rotas de relatórios (PDF/Excel)
+ */
+app.use('/api/reports', reportsRoutes);
 
 // ============ Tratamento de Erros ============
 

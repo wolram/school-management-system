@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { authenticateToken, requireRole } from '../middleware/auth';
+import { calculationRateLimiter, exportRateLimiter } from '../middleware/rateLimit';
 import * as calculationController from '../controllers/calculationController';
 
 const router = Router();
+
+// Aplicar rate limiter de cálculos a todas as rotas
+router.use(calculationRateLimiter);
 
 // ============================================================
 // ROTAS DE CÁLCULOS FINANCEIROS
@@ -58,9 +62,11 @@ router.get(
  * GET /api/calculations/export/:studentId
  * Exportar relatório mensal
  * Acesso: Todos os perfis autenticados
+ * Rate limited: 10 exports por 15 minutos
  */
 router.get(
   '/export/:studentId',
+  exportRateLimiter,
   authenticateToken,
   calculationController.exportMonthlyReport
 );
