@@ -297,7 +297,7 @@ curl -H "Authorization: Bearer {token}" http://localhost:5000/api/auth/users?pag
 
 ## 🤝 Contribuição
 
-Este projeto foi desenvolvido pela Anthropic em colaboração com Claude Code.
+Este projeto foi desenvolvido com suporte das ferramentas da Anthropic em colaboração com Claude Code.
 
 ## 📄 Licença
 
